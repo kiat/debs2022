@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.google.protobuf' version '0.8.18'
+    //id 'idea'
+}
+
+group 'de.tum.i13.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://maven-central.storage-download.googleapis.com/maven2/" }
+}
+
+
+application {
+    mainClass.set("de.tum.i13.Main")
+}
+
+protobuf {
+    
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.3"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.42.1'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+        proto {
+            srcDirs 'src/main/proto'
+        }
+    }
+}
+
+jar {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    manifest {
+        attributes "Main-Class": "de.tum.i13.Main"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+tasks.processResources {
+    duplicatesStrategy = 'include'
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    implementation 'io.grpc:grpc-netty-shaded:1.43.0'
+    implementation 'io.grpc:grpc-protobuf:1.43.0'
+    implementation 'io.grpc:grpc-stub:1.43.0'
+
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // grpc needs that, necessary for Java 9+
+}
+
+test {
+    useJUnitPlatform()
+}
