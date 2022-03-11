@@ -1,17 +1,17 @@
 # Step 0
 Generate the client code, as example, we use Python. For other languages check the documentation
 
-'''    
+```   
 # Install dependencies
 pip install grpcio
 pip install grpcio-tools
-'''
+```
 
 # Generate client code
 
-'''
+```
 python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. challenger.proto
-''' 
+```
     
 # Step 0
 Initilize the client stub from the generated code
