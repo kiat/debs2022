@@ -24,10 +24,11 @@ hs_err_pid*
 
 #gradle wrapper
 !gradle-wrapper.jar
-.gradle
+/.gradle/
 
 # builds
 build
+/bin/
 
 # ide
 .idea

@@ -46,7 +46,7 @@ public class LoadTest {
                 .addQueries(Query.Q1)
                 .addQueries(Query.Q2)
                 //.setToken(System.getenv().get("API_TOKEN")) //go to: https://challenge.msrg.in.tum.de/profile/
-                .setToken("vcgeajpqzwrfuwytvqyxypjuksgbraeg")
+                .setToken("zqultcyalnowfgxjlzlsztkcquycninr")
                 .setBenchmarkType("test") //Benchmark Type for testing
                 //.setBenchmarkType("evaluation") //Benchmark Type for testing
                 .build();
