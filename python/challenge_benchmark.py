@@ -1,6 +1,8 @@
 import grpc
-import challenger_pb2 as ch
-import challenger_pb2_grpc as api
+import messages.challenger_pb2 as ch
+import messages.challenger_pb2_grpc as api
+
+from typing import Optional
 
 
 op = [
@@ -10,7 +12,14 @@ op = [
 
 
 class Benchmark:
-    def __init__(self, token, benchmark_name, benchmark_type):
+    def __init__(
+        self,
+        token: str,
+        benchmark_name: str,
+        benchmark_type: str,
+        grpc_host: Optional[str]='challenge.msrg.in.tum.de',
+        grpc_port: Optional[str]='5023',
+    ):
         self.config = ch.BenchmarkConfiguration(
             token=token,
             benchmark_name=benchmark_name,
@@ -18,15 +27,29 @@ class Benchmark:
             queries=[ch.Query.Q1, ch.Query.Q2],
         )
         self.channel = grpc.insecure_channel(
-            "challenge.msrg.in.tum.de:5023", options=op
+            f'{grpc_host}:{grpc_port}', options=op
         )
         self.stub = api.ChallengerStub(self.channel)
         self.benchmark = self.stub.createNewBenchmark(self.config)
+        self.started = False
+        self.ended = False
 
     def start(self):
+        # Do nothing if already started.
+        if self.started:
+            return
+
+        self.started = True
+        self.ended = False
         self.stub.startBenchmark(self.benchmark)
 
     def stop(self):
+        # Do nothing if already ended.
+        if self.ended:
+            return
+
+        self.ended = True
+        self.started = False
         self.stub.endBenchmark(self.benchmark)
 
     def next_batch(self):
@@ -36,7 +59,7 @@ class Benchmark:
     def id(self):
         return self.benchmark.id
 
-    def submit_q1(self, batch_id, indicators):
+    def submit_q1(self, batch_id: str, indicators: str):
         result = ch.ResultQ1(
             benchmark_id=self.id, batch_seq_id=batch_id, indicators=indicators
         )
@@ -49,3 +72,16 @@ class Benchmark:
             crossover_events=crossover_events,
         )
         self.stub.resultQ2(result)
+    
+    def get_batches(self):
+        if self.started:
+            return
+
+        self.start()
+        while True:
+            batch = self.next_batch()
+            yield batch
+
+            if batch.last or self.ended:
+                self.stop()
+                break
