@@ -32,14 +32,25 @@ class Benchmark:
         self.stub = api.ChallengerStub(self.channel)
         self.benchmark = self.stub.createNewBenchmark(self.config)
         self.started = False
+        self.ended = False
 
     def start(self):
+        # Do nothing if already started.
+        if self.started:
+            return
+
         self.started = True
+        self.ended = False
         self.stub.startBenchmark(self.benchmark)
 
     def stop(self):
-        self.stub.endBenchmark(self.benchmark)
+        # Do nothing if already ended.
+        if self.ended:
+            return
+
+        self.ended = True
         self.started = False
+        self.stub.endBenchmark(self.benchmark)
 
     def next_batch(self):
         return self.stub.nextBatch(self.benchmark)
@@ -71,6 +82,6 @@ class Benchmark:
             batch = self.next_batch()
             yield batch
 
-            if batch.last:
+            if batch.last or self.ended:
                 self.stop()
                 break
