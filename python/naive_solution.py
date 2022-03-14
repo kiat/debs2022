@@ -1,13 +1,14 @@
 from challenge_benchmark import Benchmark
-import challenger_pb2 as ch
+from typing import List
+import messages.challenger_pb2 as ch
 
 
-def compute_ema(symbols: list[str]) -> list[ch.Indicator]:
+def compute_ema(symbols: List[str]) -> List[ch.Indicator]:
     # TODO: naive implementation
     return list()
 
 
-def crossover_events() -> list[ch.CrossoverEvent]:
+def crossover_events() -> List[ch.CrossoverEvent]:
     # TODO: naive implementation
     return list()
 
@@ -21,10 +22,8 @@ def main():
 
     event_count = 0
     batch_count = 0
-
-    benchmark.start()
-
-    while True:
+    
+    for batch in benchmark.get_batches():
         batch = benchmark.next_batch()
         batch_size = len(batch.events)
 
@@ -37,11 +36,6 @@ def main():
         )
 
         benchmark.submit_q2(batch_id=batch.seq_id, crossover_events=crossover_events())
-
-        if batch.last:
-            benchmark.stop()
-            break
-
 
 if __name__ == "__main__":
     main()
