@@ -30,7 +30,6 @@ class Tracker:
             self.windows[index] = max_events(self.windows[index], event)
         else:
             while (index > len(self.windows)):
-                # append shit
                 e = ch.Event(
                     symbol=self.symbol,
                     security_type=event.security_type,
