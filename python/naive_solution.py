@@ -4,24 +4,25 @@ from collections import defaultdict
 from google.protobuf.timestamp_pb2 import Timestamp
 
 import messages.challenger_pb2 as ch
+import numpy as np
 
 def max_events(e1: ch.Event, e2: ch.Event) -> ch.Event:
     if e1.last_trade.seconds > e2.last_trade.seconds:
         return e1
-    
+
     if e1.last_trade.seconds == e2.last_trade.seconds:
         return e1 if e1.last_trade.nanos >= e2.last_trade.nanos else e2
-    
+
     return e2
 
 class Tracker:
-    
+
     def __init__(self, symbol: str, reference: int) -> None:
         self.symbol = symbol
-        self.windows = list()
-        self.crossovers = list()
+        self.windows = np.array()
+        self.crossovers = np.array()
         self.start_time = reference
-    
+
     def eval_event(self, event: ch.Event) -> None:
 
         index = (event.last_trade.seconds - self.start_time) // (5 * 60)
@@ -37,29 +38,32 @@ class Tracker:
                     last_trade=Timestamp(seconds=0, nanos=0)
                 )
                 self.windows.append(e)
-    
-            assert len(self.windows) == index
+
+            # assert len(self.windows) == index
+            assert np.size(self.windows) == index
             self.windows.append(event)
 
-    
-    
+
+
     def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
 
         weighted_first = lambda closing, j: closing * (2 / (1 + j))
         weighted_second = lambda prev_w, j: prev_w * (1 - (2 / (1 + j)))
         ema_j = lambda closing, prev_w, j: weighted_first(closing, j) + weighted_second(prev_w, j)
-        
+
         ema_38 = 0
         ema_100 = 0
 
-        crossovers = list()
-        
+        crossovers = np.array()
+
         for event in self.windows:
+        # for event in np.nditer(self.windows);
             # TODO: store EMAs, instead of iterating over everything
             # for every batch.
             cur_38 = ema_j(event.last_trade_price, ema_38, 38)
             cur_100 = ema_j(event.last_trade_price, ema_100, 100)
-            
+
+
             if ema_38 <= ema_100 and cur_38 > cur_100:
                 crossover_event = ch.CrossoverEvent(
                     ts=event.last_trade,
@@ -67,9 +71,9 @@ class Tracker:
                     security_type=event.security_type,
                     signal_type=ch.CrossoverEvent.SignalType.Buy
                 )
-                
+
                 crossovers.append(crossover_event)
-            
+
             if ema_38 >= ema_100 and cur_38 < cur_100:
                 crossover_event = ch.CrossoverEvent(
                     ts=event.last_trade,
@@ -77,14 +81,16 @@ class Tracker:
                     security_type=event.security_type,
                     signal_type=ch.CrossoverEvent.SignalType.Sell
                 )
-                
+
                 crossovers.append(crossover_event)
 
-            while len(crossovers) > 3:
-                crossovers.pop(0)
-            
+            while np.greater(crossovers.size(), 3):
+            # while len(crossovers) > 3:
+                # crossovers.pop(0)
+                np.delete(crossovers,0)
+
         return ch.Indicator(symbol= self.symbol, ema_38=ema_38, ema_100=ema_100), crossovers
-                
+
 
 
 
@@ -99,11 +105,14 @@ def main():
     batch_count = 0
 
     trackers = {}
-    
+
     start_time = 0
 
     for batch in benchmark.get_batches():
-        batch_size = len(batch.events)
+    # for batch in np.nditer(benchmark.get_batches()):
+
+        batch_size = np.size(batch.events)
+
 
         print(f"Batch [num={batch_count} size={batch_size}]")
         event_count += batch_size
@@ -121,19 +130,23 @@ def main():
             tracker = trackers[e.symbol]
             tracker.eval_event(e)
 
-        q1_indicators = list()
-        all_crossovers = list()
+        q1_indicators = np.array()
+        all_crossovers = np.array()
 
         for symbol in batch.lookup_symbols:
+        # for symbol in np.nditer(batch.lookup_symbols):
+
             if symbol not in trackers:
                 continue
 
             tracker = trackers[symbol]
-            
+
             indicator, crossovers = tracker.get_results()
-            
+
             q1_indicators.append(indicator)
-            all_crossovers.extend(crossovers)
+            # all_crossovers.extend(crossovers)
+            all_crossovers.append(crossovers)
+
 
         benchmark.submit_q1(
             batch_id=batch.seq_id, indicators=q1_indicators
