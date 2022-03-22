@@ -1,9 +1,11 @@
 from challenge_benchmark import Benchmark
 from typing import Dict, List, Tuple
 from collections import defaultdict
+from queue import Queue
 from google.protobuf.timestamp_pb2 import Timestamp
 
 import messages.challenger_pb2 as ch
+import threading
 
 def max_events(e1: ch.Event, e2: ch.Event) -> ch.Event:
     if e1.last_trade.seconds > e2.last_trade.seconds:
@@ -82,34 +84,17 @@ class Tracker:
 
             while len(crossovers) > 3:
                 crossovers.pop(0)
-            
+
         return ch.Indicator(symbol= self.symbol, ema_38=ema_38, ema_100=ema_100), crossovers
-                
 
 
-
-def main():
-    benchmark = Benchmark(
-        token="zqultcyalnowfgxjlzlsztkcquycninr",
-        benchmark_name="david",
-        benchmark_type="test",
-    )
-
-    event_count = 0
-    batch_count = 0
-
+def batch_processor(benchmark: Benchmark, queue: Queue):
     trackers = {}
-    
     start_time = 0
 
-    for batch in benchmark.get_batches():
-        batch_size = len(batch.events)
-
-        print(f"Batch [num={batch_count} size={batch_size}]")
-        event_count += batch_size
-        batch_count += 1
-
-        # Evaluate all events in batches.
+    while True:
+        batch = queue.get(block=True)
+        
         for e in batch.events:
             if start_time == 0:
                 # set start time
@@ -140,6 +125,24 @@ def main():
         )
 
         benchmark.submit_q2(batch_id=batch.seq_id, crossover_events=all_crossovers)
+        
+        queue.task_done()
+    
+
+def main():
+    benchmark = Benchmark(
+        token="zqultcyalnowfgxjlzlsztkcquycninr",
+        benchmark_name="multithreading - david and kevin",
+        benchmark_type="test",
+    )
+    
+    queue = Queue(maxsize=30)
+
+    threading.Thread(target=batch_processor, daemon=True, args=(benchmark, queue)).start()
+    
+    for batch in benchmark.get_batches():
+        queue.put(batch, block=True)
+        # print("size:", queue.qsize())
 
 if __name__ == "__main__":
     main()
