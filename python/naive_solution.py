@@ -1,153 +1,158 @@
-import google.protobuf.timestamp_pb2
-
 from challenge_benchmark import Benchmark
-import challenger_pb2 as ch
+from typing import Dict, List, Tuple
+from collections import defaultdict
+from google.protobuf.timestamp_pb2 import Timestamp
+
+import messages.challenger_pb2 as ch
+import numpy as np
+
+def max_events(e1: ch.Event, e2: ch.Event) -> ch.Event:
+    if e1.last_trade.seconds > e2.last_trade.seconds:
+        return e1
+
+    if e1.last_trade.seconds == e2.last_trade.seconds:
+        return e1 if e1.last_trade.nanos >= e2.last_trade.nanos else e2
+
+    return e2
+
+class Tracker:
+
+    def __init__(self, symbol: str, reference: int) -> None:
+        self.symbol = symbol
+        self.windows = np.array()
+        self.crossovers = np.array()
+        self.start_time = reference
+
+    def eval_event(self, event: ch.Event) -> None:
+
+        index = (event.last_trade.seconds - self.start_time) // (5 * 60)
+        if index < len(self.windows):
+            # check if event is later than current event in window
+            self.windows[index] = max_events(self.windows[index], event)
+        else:
+            while (index > len(self.windows)):
+                e = ch.Event(
+                    symbol=self.symbol,
+                    security_type=event.security_type,
+                    last_trade_price=0.0,
+                    last_trade=Timestamp(seconds=0, nanos=0)
+                )
+                self.windows.append(e)
+
+            # assert len(self.windows) == index
+            assert np.size(self.windows) == index
+            self.windows.append(event)
 
 
-class EMA:
-    C38 = 2 / (1 + 38)
-    C100 = 2 / (1 + 100)
 
-    def __init__(self, benchmark, w_length):
-        self.benchmark = benchmark
-        self.w_start = -1
-        self.data = dict()
-        self.prev_ema38 = dict()
-        self.prev_ema100 = dict()
-        self.symbols = set()
-        self.sec_types = dict()
-        self.w_length = w_length
+    def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
 
-    def reset(self):
-        self.w_start = -1
-        self.data = dict()
-        self.prev_ema38 = dict()
-        self.prev_ema100 = dict()
-        self.symbols = set()
-        self.sec_types = dict()
+        weighted_first = lambda closing, j: closing * (2 / (1 + j))
+        weighted_second = lambda prev_w, j: prev_w * (1 - (2 / (1 + j)))
+        ema_j = lambda closing, prev_w, j: weighted_first(closing, j) + weighted_second(prev_w, j)
 
-    @staticmethod
-    def get_minutes(timestamp):
-        return timestamp.seconds // 60
+        ema_38 = 0
+        ema_100 = 0
 
-    @staticmethod
-    def compute_ema(close_price, prev_ema, c):
-        return close_price * c + prev_ema * (1 - c)
+        crossovers = np.array()
 
-    @staticmethod
-    def make_response(msg, **kwargs):
-        for k, v in kwargs.items():
-            setattr(msg, k, v)
-        return msg
+        for event in self.windows:
+            # for event in np.nditer(self.windows);
+            # TODO: store EMAs, instead of iterating over everything
+            # for every batch.
+            cur_38 = ema_j(event.last_trade_price, ema_38, 38)
+            cur_100 = ema_j(event.last_trade_price, ema_100, 100)
 
-    def get_prev_ema38(self, k):
-        return self.prev_ema38[k] if k in self.prev_ema38 else 0
 
-    def get_prev_ema100(self, k):
-        return self.prev_ema100[k] if k in self.prev_ema100 else 0
+            if ema_38 <= ema_100 and cur_38 > cur_100:
+                crossover_event = ch.CrossoverEvent(
+                    ts=event.last_trade,
+                    symbol=self.symbol,
+                    security_type=event.security_type,
+                    signal_type=ch.CrossoverEvent.SignalType.Buy
+                )
 
-    def make_sell(self, k):
-        return EMA.make_response(
-            ch.CrossoverEvent(),
-            ts=EMA.make_response(
-                google.protobuf.timestamp_pb2.Timestamp(),
-                seconds=(self.w_start + self.w_length) * 60,
-                nano=0
-            ),
-            symbol=k,
-            security_type=self.sec_types[k],
-            signal_type=ch.CrossoverEvent.SignalType.Sell
-        )
+                crossovers.append(crossover_event)
 
-    def make_buy(self, k):
-        return EMA.make_response(
-            ch.CrossoverEvent(),
-            ts=EMA.make_response(
-                google.protobuf.timestamp_pb2.Timestamp(),
-                seconds=(self.w_start + self.w_length) * 60,
-                nano=0
-            ),
-            symbol=k,
-            security_type=self.sec_types[k],
-            signal_type=ch.CrossoverEvent.SignalType.Buy
-        )
+            if ema_38 >= ema_100 and cur_38 < cur_100:
+                crossover_event = ch.CrossoverEvent(
+                    ts=event.last_trade,
+                    symbol=self.symbol,
+                    security_type=event.security_type,
+                    signal_type=ch.CrossoverEvent.SignalType.Sell
+                )
 
-    def produce_ema(self, batch_id):
-        crossovers = []
+                crossovers.append(crossover_event)
 
-        for k, v in self.data.items():
-            ema38 = EMA.compute_ema(v, self.get_prev_ema38(k), EMA.C38)
-            ema100 = EMA.compute_ema(v, self.get_prev_ema100(k), EMA.C100)
+            while np.greater(crossovers.size(), 3):
+                # while len(crossovers) > 3:
+                # crossovers.pop(0)
+                np.delete(crossovers,0)
 
-            if k in self.prev_ema100 and k in self.prev_ema38:
-                if ema38 < ema100 and self.prev_ema38[k] >= self.prev_ema100[k]:
-                    crossovers.append(self.make_sell(k))
+        return ch.Indicator(symbol= self.symbol, ema_38=ema_38, ema_100=ema_100), crossovers
 
-                if ema38 > ema100 and self.prev_ema38[k] <= self.prev_ema100[k]:
-                    crossovers.append(self.make_buy(k))
 
-            self.prev_ema38[k] = ema38
-            self.prev_ema100[k] = ema100
-
-        indicators = map(
-            lambda s: EMA.make_response(
-                ch.Indicator(),
-                symbol=s,
-                ema_38=self.prev_ema38[s],
-                ema_100=self.prev_ema100[s]
-            ),
-            self.symbols
-        )
-
-        self.benchmark.submit_q1(batch_id=batch_id, indicators=indicators)
-        self.benchmark.submit_q2(batch_id=batch_id, crossover_events=crossovers)
-
-    def aggregate(self, batch):
-        self.reset()
-
-        for event in batch.events:
-            w = EMA.get_minutes(event.last_trade)
-
-            if self.w_start == -1:
-                self.w_start = w
-
-            if w > self.w_start + self.w_length:
-                self.produce_ema(batch.seq_id)
-                self.w_start = self.w_start + self.w_start
-
-            self.symbols.add(event.symbol)
-            self.sec_types[event.symbol] = event.security_type
-            self.data[event.symbol] = event.last_trade_price
 
 
 def main():
     benchmark = Benchmark(
         token="zqultcyalnowfgxjlzlsztkcquycninr",
-        benchmark_name="Naive solution",
+        benchmark_name="david",
         benchmark_type="test",
     )
-
-    ema = EMA(benchmark, w_length=5)
 
     event_count = 0
     batch_count = 0
 
-    benchmark.start()
+    trackers = {}
 
-    while True:
-        batch = benchmark.next_batch()
-        batch_size = len(batch.events)
+    start_time = 0
+
+    for batch in benchmark.get_batches():
+        # for batch in np.nditer(benchmark.get_batches()):
+
+        batch_size = np.size(batch.events)
+
+
         print(f"Batch [num={batch_count} size={batch_size}]")
-
-        ema.aggregate(batch)
-
         event_count += batch_size
         batch_count += 1
 
-        if batch.last:
-            benchmark.stop()
-            break
+        # Evaluate all events in batches.
+        for e in batch.events:
+            if start_time == 0:
+                # set start time
+                start_time = e.last_trade.seconds
 
+            if e.symbol not in trackers:
+                trackers[e.symbol] = Tracker(e.symbol, start_time)
+
+            tracker = trackers[e.symbol]
+            tracker.eval_event(e)
+
+        q1_indicators = np.array()
+        all_crossovers = np.array()
+
+        for symbol in batch.lookup_symbols:
+            # for symbol in np.nditer(batch.lookup_symbols):
+
+            if symbol not in trackers:
+                continue
+
+            tracker = trackers[symbol]
+
+            indicator, crossovers = tracker.get_results()
+
+            q1_indicators.append(indicator)
+            # all_crossovers.extend(crossovers)
+            all_crossovers.append(crossovers)
+
+
+        benchmark.submit_q1(
+            batch_id=batch.seq_id, indicators=q1_indicators
+        )
+
+        benchmark.submit_q2(batch_id=batch.seq_id, crossover_events=all_crossovers)
 
 if __name__ == "__main__":
     main()
