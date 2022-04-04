@@ -1,16 +1,14 @@
-# debs2022
+# Debs2022
 
+## Running locally
 
-# generate protocol buffer files 
+### Configuration file
+File `cloud.properties` contains `host:port` definitions for each worker.  
+Workers will automatically find their configuration in the properties file.
 
-'''
-brew install protobuf
-'''
+### Running workers
+For each worker process, run:
+```shell
+gradlew runWorker
+```
 
-
-
-
-'''
-protoc --proto_path=src --java_out=build/gen ./src/main/proto/challenger.proto 
-
-'''

@@ -1,24 +1,23 @@
 package de.tum.i13;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.tum.i13.challenge.Batch;
-import de.tum.i13.challenge.Benchmark;
-import de.tum.i13.challenge.BenchmarkConfiguration;
-import de.tum.i13.challenge.ChallengerGrpc;
-import de.tum.i13.challenge.CrossoverEvent;
-import de.tum.i13.challenge.Indicator;
-import de.tum.i13.challenge.Query;
-import de.tum.i13.challenge.ResultQ1;
-import de.tum.i13.challenge.ResultQ2;
+import de.tum.i13.Cloud.MultiClient;
+import de.tum.i13.challenge.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Main {
+    private static final Logger log = LogManager.getLogger(Main.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MalformedURLException {
+        MultiClient workerClient = MultiClient.fromConfiguration("cloud.properties");
 
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress("challenge.msrg.in.tum.de", 5023)
@@ -32,10 +31,10 @@ public class Main {
                 .withMaxOutboundMessageSize(100 * 1024 * 1024);
 
         BenchmarkConfiguration bc = BenchmarkConfiguration.newBuilder()
-                .setBenchmarkName("Testrun " + new Date().toString())
+                .setBenchmarkName("Java- " + new Date())
                 .addQueries(Query.Q1)
                 .addQueries(Query.Q2)
-                //.setToken("see API key in your Profile") //go to: https://challenge.msrg.in.tum.de/profile/
+                .setToken("zqultcyalnowfgxjlzlsztkcquycninr") //go to: https://challenge.msrg.in.tum.de/profile/
                 //.setBenchmarkType("evaluation") //Benchmark Type for evaluation
                 .setBenchmarkType("test") //Benchmark Type for testing
                 .build();
@@ -47,13 +46,9 @@ public class Main {
         challengeClient.startBenchmark(newBenchmark);
 
         //Process the events
-        int cnt = 0;
         while(true) {
             Batch batch = challengeClient.nextBatch(newBenchmark);
-            if (batch.getLast()) { //Stop when we get the last batch
-                System.out.println("Received lastbatch, finished!");
-                break;
-            }
+            workerClient.submitMiniBatch(batch);
 
             //process the batch of events we have
             var q1Results = calculateIndicators(batch);
@@ -77,16 +72,18 @@ public class Main {
                     .build();
 
             challengeClient.resultQ2(q2Result);
-            System.out.println("Processed batch #" + cnt);
-            ++cnt;
 
-            if(cnt > 100) { //for testing you can stop early, in an evaluation run, run until getLast() is True.
+            log.info(String.format("processed batch %d with %d events", batch.getSeqId(), batch.getEventsList().size()));
+
+            if (batch.getLast()) { //Stop when we get the last batch
+                log.info("received last batch");
                 break;
             }
         }
 
         challengeClient.endBenchmark(newBenchmark);
         System.out.println("ended Benchmark");
+        workerClient.awaitTermination();
     }
 
     private static List<Indicator> calculateIndicators(Batch batch) {
