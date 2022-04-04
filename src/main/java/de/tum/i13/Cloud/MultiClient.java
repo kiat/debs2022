@@ -1,7 +1,6 @@
 package de.tum.i13.Cloud;
 
-import de.tum.i13.challenge.Batch;
-import de.tum.i13.challenge.Event;
+import de.tum.i13.challenge.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,8 +16,8 @@ import java.util.stream.Collectors;
 public class MultiClient {
     private static final Logger log = LogManager.getLogger(MultiClient.class);
 
-    WorkerClient[] clients;
-    ThreadPoolExecutor pool;
+    private final WorkerClient[] clients;
+    private final ThreadPoolExecutor pool;
 
     public MultiClient(List<String> targets) {
         List<WorkerClient> validClients = new LinkedList<>();
@@ -35,6 +34,7 @@ public class MultiClient {
     }
 
     public void awaitTermination() {
+        this.pool.shutdown();
         while (true) {
             try {
                 if(this.pool.awaitTermination(5, TimeUnit.MINUTES)) {
@@ -55,8 +55,8 @@ public class MultiClient {
         return fromConfiguration(new Configuration(configFile));
     }
 
-    public void submitMiniBatch(Batch batch) {
-        this.pool.execute(new SendMiniBatchTask(batch, this.clients));
+    public void submitMiniBatch(Batch batch, Benchmark benchmark, ChallengerGrpc.ChallengerBlockingStub challengeClient) {
+        this.pool.execute(new SendMiniBatchTask(batch, this.clients, benchmark, challengeClient));
     }
 
     private static class SendMiniBatchTask implements Runnable {
@@ -64,10 +64,14 @@ public class MultiClient {
 
         private final Batch batch;
         private final WorkerClient[] clients;
+        private final Benchmark benchmark;
+        private final ChallengerGrpc.ChallengerBlockingStub challengeClient;
 
-        public SendMiniBatchTask(Batch batch, WorkerClient[] clients) {
+        public SendMiniBatchTask(Batch batch, WorkerClient[] clients, Benchmark benchmark, ChallengerGrpc.ChallengerBlockingStub challengeClient) {
+            this.benchmark = benchmark;
             this.batch = batch;
             this.clients = clients;
+            this.challengeClient = challengeClient;
         }
 
         private int getHash(String key) {
@@ -79,6 +83,43 @@ public class MultiClient {
                 synchronized (this.clients[i]) {
                     this.clients[i].submitMiniBatch(batches.get(i).build());
                 }
+            }
+        }
+
+        private ResultResponse getResults() {
+            ResultQ1.Builder q1 = ResultQ1.newBuilder()
+                    .setBenchmarkId(this.benchmark.getId())
+                    .setBatchSeqId(this.batch.getSeqId());
+
+            ResultQ2.Builder q2 = ResultQ2.newBuilder()
+                    .setBenchmarkId(this.benchmark.getId())
+                            .setBatchSeqId(this.batch.getSeqId());
+
+            ResultRequest request = ResultRequest.newBuilder().setSeqId(this.batch.getSeqId()).build();
+
+            Arrays.stream(this.clients).map(client -> client.getResults(request))
+                    .forEach(resultResponse -> {
+                        synchronized (q1) {
+                            q1.addAllIndicators(resultResponse.getQuery1Result().getIndicatorsList());
+                        }
+                        synchronized (q2) {
+                            q2.addAllCrossoverEvents(resultResponse.getQuery2Result().getCrossoverEventsList());
+                        }
+                    });
+
+            return ResultResponse.newBuilder()
+                    .setSeqId(this.batch.getSeqId())
+                    .setQuery1Result(q1)
+                    .setQuery2Result(q2)
+                    .build();
+        }
+
+        private void submitResults() {
+            ResultResponse results = getResults();
+
+            synchronized (this.challengeClient) {
+                this.challengeClient.resultQ1(results.getQuery1Result());
+                this.challengeClient.resultQ2(results.getQuery2Result());
             }
         }
 
@@ -101,6 +142,7 @@ public class MultiClient {
             }
 
             sendBatches(batches);
+            submitResults();
         }
     }
 }

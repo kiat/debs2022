@@ -15,9 +15,14 @@ import org.apache.logging.log4j.Logger;
 
 public class Main {
     private static final Logger log = LogManager.getLogger(Main.class);
+    private static int maxBatches = 100;
 
     public static void main(String[] args) throws MalformedURLException {
         MultiClient workerClient = MultiClient.fromConfiguration("cloud.properties");
+
+        if (args.length > 0) {
+            maxBatches = Integer.parseInt(args[0]);
+        }
 
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress("challenge.msrg.in.tum.de", 5023)
@@ -47,43 +52,26 @@ public class Main {
 
         //Process the events
         while(true) {
-            Batch batch = challengeClient.nextBatch(newBenchmark);
-            workerClient.submitMiniBatch(batch);
+            Batch batch;
 
-            //process the batch of events we have
-            var q1Results = calculateIndicators(batch);
+            synchronized (challengeClient) {
+                batch = challengeClient.nextBatch(newBenchmark);
+            }
 
-            ResultQ1 q1Result = ResultQ1.newBuilder()
-                    .setBenchmarkId(newBenchmark.getId()) //set the benchmark id
-                    .setBatchSeqId(batch.getSeqId()) //set the sequence number
-                    .addAllIndicators(q1Results)
-                    .build();
+            workerClient.submitMiniBatch(batch, newBenchmark, challengeClient);
 
-            //return the result of Q1
-            challengeClient.resultQ1(q1Result);
-
-
-            var crossOverevents = calculateCrossoverEvents(batch);
-
-            ResultQ2 q2Result = ResultQ2.newBuilder()
-                    .setBenchmarkId(newBenchmark.getId()) //set the benchmark id
-                    .setBatchSeqId(batch.getSeqId()) //set the sequence number
-                    .addAllCrossoverEvents(crossOverevents)
-                    .build();
-
-            challengeClient.resultQ2(q2Result);
 
             log.info(String.format("processed batch %d with %d events", batch.getSeqId(), batch.getEventsList().size()));
 
-            if (batch.getLast()) { //Stop when we get the last batch
+            if (batch.getLast() || batch.getSeqId() >= maxBatches) { //Stop when we get the last batch
                 log.info("received last batch");
                 break;
             }
         }
 
-        challengeClient.endBenchmark(newBenchmark);
-        System.out.println("ended Benchmark");
         workerClient.awaitTermination();
+        challengeClient.endBenchmark(newBenchmark);
+        log.info("finished benchmark");
     }
 
     private static List<Indicator> calculateIndicators(Batch batch) {

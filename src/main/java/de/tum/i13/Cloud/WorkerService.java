@@ -18,7 +18,7 @@ public class WorkerService extends WorkerGrpc.WorkerImplBase {
     @Override
     public void submitMiniBatch(Batch request, StreamObserver<Empty> responseObserver) {
         log.info(String.format("received batch %d with %d events", request.getSeqId(), request.getEventsList().size()));
-        // TODO: compute EMAs for this mini-batch. Use different thread for this task.
+        // TODO: compute EMAs for this mini-batch. Compute asynchronously.
 
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
@@ -27,7 +27,7 @@ public class WorkerService extends WorkerGrpc.WorkerImplBase {
     @Override
     public void getResults(ResultRequest request, StreamObserver<ResultResponse> responseObserver) {
         log.info("requested results for " + request.getSeqId());
-        // TODO: return EMAs and crossover indicators
+        // TODO: return EMAs and crossover indicators. Compute asynchronously.
 
         responseObserver.onNext(ResultResponse.newBuilder().build());
         responseObserver.onCompleted();
