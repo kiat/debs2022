@@ -57,7 +57,7 @@ class Tracker:
         crossovers = np.array()
 
         for event in self.windows:
-        # for event in np.nditer(self.windows);
+            # for event in np.nditer(self.windows);
             # TODO: store EMAs, instead of iterating over everything
             # for every batch.
             cur_38 = ema_j(event.last_trade_price, ema_38, 38)
@@ -85,7 +85,7 @@ class Tracker:
                 crossovers.append(crossover_event)
 
             while np.greater(crossovers.size(), 3):
-            # while len(crossovers) > 3:
+                # while len(crossovers) > 3:
                 # crossovers.pop(0)
                 np.delete(crossovers,0)
 
@@ -109,7 +109,7 @@ def main():
     start_time = 0
 
     for batch in benchmark.get_batches():
-    # for batch in np.nditer(benchmark.get_batches()):
+        # for batch in np.nditer(benchmark.get_batches()):
 
         batch_size = np.size(batch.events)
 
@@ -134,7 +134,7 @@ def main():
         all_crossovers = np.array()
 
         for symbol in batch.lookup_symbols:
-        # for symbol in np.nditer(batch.lookup_symbols):
+            # for symbol in np.nditer(batch.lookup_symbols):
 
             if symbol not in trackers:
                 continue
