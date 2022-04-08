@@ -8,7 +8,7 @@ import messages.challenger_pb2 as ch
 import threading
 
 def max_events(e1: ch.Event, e2: ch.Event) -> ch.Event:
-    if e1.last_trade.seconds > e2.last_trade.seconds:
+    if e2 is None or e1.last_trade.seconds > e2.last_trade.seconds:
         return e1
     
     if e1.last_trade.seconds == e2.last_trade.seconds:
@@ -16,84 +16,76 @@ def max_events(e1: ch.Event, e2: ch.Event) -> ch.Event:
     
     return e2
 
+def get_crossover(ema_38, ema_100, cur_38, cur_100, e):
+    type = None
+    if ema_38 <= ema_100 and cur_38 > cur_100:
+        type = ch.CrossoverEvent.SignalType.Buy
+    elif ema_38 >= ema_100 and cur_38 < cur_100:
+        type = ch.CrossoverEvent.SignalType.Sell
+
+    if type is not None and e is not None:
+        return ch.CrossoverEvent(
+                ts=e.last_trade,
+                symbol=e.symbol,
+                security_type=e.security_type,
+                signal_type=type
+            )
+    
+    return None
+
 class Tracker:
     
     def __init__(self, symbol: str, reference: int) -> None:
         self.symbol = symbol
-        self.windows = list()
-        self.crossovers = list()
         self.start_time = reference
+        self.prev_ema_38 = 0
+        self.prev_ema_100 = 0
+        self.latest_event = None
+        self.crossovers = list()
     
     def eval_event(self, event: ch.Event) -> None:
-
+        # index is 0 which means current window is still open
+        # or index is > 0 which means current window has now closed
         index = (event.last_trade.seconds - self.start_time) // (5 * 60)
-        if index < len(self.windows):
-            # check if event is later than current event in window
-            self.windows[index] = max_events(self.windows[index], event)
-        else:
-            while (index > len(self.windows)):
-                e = ch.Event(
-                    symbol=self.symbol,
-                    security_type=event.security_type,
-                    last_trade_price=0.0,
-                    last_trade=Timestamp(seconds=0, nanos=0)
-                )
-                self.windows.append(e)
-    
-            assert len(self.windows) == index
-            self.windows.append(event)
 
-    
+        if index == 0:
+            self.latest_event = event
+        else:
+            weighted_first = lambda closing, j: closing * (2 / (1 + j))
+            weighted_second = lambda prev_w, j: prev_w * (1 - (2 / (1 + j)))
+            ema_j = lambda closing, prev_w, j: weighted_first(closing, j) + weighted_second(prev_w, j)
+
+            cur_38 = ema_j(event.last_trade_price, self.prev_ema_38, 38)
+            cur_100 = ema_j(event.last_trade_price, self.prev_ema_100, 100)
+
+            # detect crossovers
+            crossover = get_crossover(self.prev_ema_38, self.prev_ema_100, cur_38, cur_100, self.latest_event)
+            if crossover is not None:
+                self.crossovers.append(crossover)
+                while (len(self.crossovers) > 3):
+                    self.crossovers.pop(0)
+
+            # update prev ema to be the ema of the closed window
+            self.prev_ema_38 = cur_38
+            self.prev_ema_100 = cur_100
+
+            # update start time to be the start of the new window
+            self.start_time += index * (5 * 60)
     
     def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
-
-        weighted_first = lambda closing, j: closing * (2 / (1 + j))
-        weighted_second = lambda prev_w, j: prev_w * (1 - (2 / (1 + j)))
-        ema_j = lambda closing, prev_w, j: weighted_first(closing, j) + weighted_second(prev_w, j)
-        
-        ema_38 = 0
-        ema_100 = 0
-
-        crossovers = list()
-        
-        for event in self.windows:
-            # TODO: store EMAs, instead of iterating over everything
-            # for every batch.
-            cur_38 = ema_j(event.last_trade_price, ema_38, 38)
-            cur_100 = ema_j(event.last_trade_price, ema_100, 100)
-            
-            if ema_38 <= ema_100 and cur_38 > cur_100:
-                crossover_event = ch.CrossoverEvent(
-                    ts=event.last_trade,
-                    symbol=self.symbol,
-                    security_type=event.security_type,
-                    signal_type=ch.CrossoverEvent.SignalType.Buy
-                )
-                
-                crossovers.append(crossover_event)
-            
-            if ema_38 >= ema_100 and cur_38 < cur_100:
-                crossover_event = ch.CrossoverEvent(
-                    ts=event.last_trade,
-                    symbol=self.symbol,
-                    security_type=event.security_type,
-                    signal_type=ch.CrossoverEvent.SignalType.Sell
-                )
-                
-                crossovers.append(crossover_event)
-
-            while len(crossovers) > 3:
-                crossovers.pop(0)
-
-        return ch.Indicator(symbol= self.symbol, ema_38=ema_38, ema_100=ema_100), crossovers
+        return ch.Indicator(symbol= self.symbol, ema_38=self.prev_ema_38, ema_100=self.prev_ema_100), self.crossovers
 
 
 def batch_processor(benchmark: Benchmark, queue: Queue):
     trackers = {}
     start_time = 0
 
+    # batch_num = 0
+
     while True:
         batch = queue.get(block=True)
+        # print(batch_num)
+        # batch_num += 1
         
         for e in batch.events:
             if start_time == 0:
@@ -132,7 +124,7 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
 def main():
     benchmark = Benchmark(
         token="zqultcyalnowfgxjlzlsztkcquycninr",
-        benchmark_name="multithreading - david and kevin",
+        benchmark_name="new method - david",
         benchmark_type="test",
     )
     
