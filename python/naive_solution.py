@@ -10,14 +10,6 @@ import messages.challenger_pb2 as ch
 import threading
 import time
 
-eval_event_time = 0
-lookup_symbol_time = 0
-lookup_loop_time = 0
-lookup_submit_time = 0 
-
-def get_time():
-    return round(time.time() * 1000)
-
 def get_crossover(ema_38, ema_100, cur_38, cur_100, e):
     type = None
     if ema_38 <= ema_100 and cur_38 > cur_100:
@@ -100,13 +92,7 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
     trackers = {}
     
     batch_num = 0
-
-    global eval_event_time
-    global lookup_symbol_time
-    global lookup_loop_time
-    global lookup_submit_time 
     
-
     while True:
         list_of_events, lookup_symbols, seq_id, start_time = queue.get(block=True)
         print(batch_num)
@@ -115,7 +101,6 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         num_threads = len(list_of_events)
 
         threads = list()
-        start = get_time()
         for i in range(num_threads):
             threads.append((ProcessEvents(trackers, list_of_events[i], start_time)))
 
@@ -125,13 +110,8 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         for i in range(num_threads):
             threads[i].join()
 
-        eval_event_time += get_time() - start
-
         q1_indicators = list()
         all_crossovers = list()
-
-        start = get_time()
-        loopStart = get_time()
 
         for symbol in lookup_symbols:
             if symbol not in trackers:
@@ -144,17 +124,9 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
             q1_indicators.append(indicator)
             all_crossovers.extend(crossovers)
 
-        lookup_loop_time += get_time() - loopStart
-
-        submitStart = get_time()
-
         threading.Thread(target=submit_results, daemon=True, args=(benchmark, seq_id, q1_indicators, all_crossovers)).start()
         
         queue.task_done()
-
-        lookup_submit_time += get_time() - submitStart
-
-        lookup_symbol_time += get_time() - start
 
 # class used to ensure that pre-processed batches are put into the queue in the correct order
 class Counter:
@@ -207,7 +179,6 @@ class ProcessBatches (threading.Thread):
             while not self.counter.is_value(obj[2]):
                 pass
 
-            print("batch num: ", obj[2], flush=True)
             # at this point counter == batch_num
             self.queue.put(obj, block=True)
 
@@ -254,11 +225,6 @@ def main():
     
     queue.join()
 
-    print("stop benchmark")
-    print("eval event time: ", eval_event_time, eval_event_time / 992)
-    print("lookup time: ", lookup_symbol_time, lookup_symbol_time / 992)
-    print("lookup_loop_time: ", lookup_loop_time, lookup_loop_time / 992)
-    print("lookup_submit_time: ", lookup_submit_time, lookup_submit_time / 992)
     benchmark.stop()
 
 if __name__ == "__main__":
