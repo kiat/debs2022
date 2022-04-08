@@ -75,23 +75,22 @@ class Tracker:
     def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
         return ch.Indicator(symbol= self.symbol, ema_38=self.prev_ema_38, ema_100=self.prev_ema_100), self.crossovers
 
+def process_events(trackers, events):
+    pass
+
 
 def batch_processor(benchmark: Benchmark, queue: Queue):
     trackers = {}
-    start_time = 0
-
-    # batch_num = 0
+    
+    batch_num = 0
+    batch = queue.get(block=True)
+    start_time = batch.events[0].last_trade.seconds
 
     while True:
-        batch = queue.get(block=True)
-        # print(batch_num)
-        # batch_num += 1
+        print(batch_num)
+        batch_num += 1
         
         for e in batch.events:
-            if start_time == 0:
-                # set start time
-                start_time = e.last_trade.seconds
-
             if e.symbol not in trackers:
                 trackers[e.symbol] = Tracker(e.symbol, start_time)
 
@@ -119,6 +118,7 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         benchmark.submit_q2(batch_id=batch.seq_id, crossover_events=all_crossovers)
         
         queue.task_done()
+        batch = queue.get(block=True)
     
 
 def main():
