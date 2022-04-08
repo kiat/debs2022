@@ -74,9 +74,22 @@ class Tracker:
     
     def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
         return ch.Indicator(symbol= self.symbol, ema_38=self.prev_ema_38, ema_100=self.prev_ema_100), self.crossovers
+    
 
-def process_events(trackers, events):
-    pass
+class ProcessEvents (threading.Thread):
+    def __init__(self, trackers, events, start_time):
+        threading.Thread.__init__(self)
+        self.trackers = trackers
+        self.events = events
+        self.start_time = start_time
+
+    def run(self):
+        for e in self.events:
+            if e.symbol not in self.trackers:
+                self.trackers[e.symbol] = Tracker(e.symbol, self.start_time)
+
+            tracker = self.trackers[e.symbol]
+            tracker.eval_event(e)
 
 
 def batch_processor(benchmark: Benchmark, queue: Queue):
@@ -89,13 +102,26 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
     while True:
         print(batch_num)
         batch_num += 1
-        
-        for e in batch.events:
-            if e.symbol not in trackers:
-                trackers[e.symbol] = Tracker(e.symbol, start_time)
 
-            tracker = trackers[e.symbol]
-            tracker.eval_event(e)
+        list_of_events = list()
+        num_threads = 4
+        for i in range(num_threads):
+            list_of_events.append(list())
+
+        for e in batch.events:
+            index = hash(e.symbol) % num_threads
+            list_of_events[index].append(e)
+
+        threads = list()
+
+        for i in range(num_threads):
+            threads.append((ProcessEvents(trackers, list_of_events[i], start_time)))
+
+        for i in range(num_threads):
+            threads[i].start()
+        
+        for i in range(num_threads):
+            threads[i].join()
 
         q1_indicators = list()
         all_crossovers = list()
