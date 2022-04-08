@@ -48,8 +48,9 @@ class Tracker:
             weighted_second = lambda prev_w, j: prev_w * (1 - (2 / (1 + j)))
             ema_j = lambda closing, prev_w, j: weighted_first(closing, j) + weighted_second(prev_w, j)
 
-            cur_38 = ema_j(event.last_trade_price, self.prev_ema_38, 38)
-            cur_100 = ema_j(event.last_trade_price, self.prev_ema_100, 100)
+            last_trade_price = self.latest_event.last_trade_price
+            cur_38 = ema_j(last_trade_price, self.prev_ema_38, 38)
+            cur_100 = ema_j(last_trade_price, self.prev_ema_100, 100)
 
             # detect crossovers
             crossover = get_crossover(self.prev_ema_38, self.prev_ema_100, cur_38, cur_100, self.latest_event)
@@ -64,6 +65,7 @@ class Tracker:
 
             # update start time to be the start of the new window
             self.start_time += index * (5 * 60)
+            self.latest_event = event
     
     def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
         return ch.Indicator(symbol= self.symbol, ema_38=self.prev_ema_38, ema_100=self.prev_ema_100), self.crossovers
