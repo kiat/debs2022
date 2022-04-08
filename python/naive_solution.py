@@ -96,21 +96,14 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
     trackers = {}
     
     batch_num = 0
-    batch = queue.get(block=True)
-    start_time = batch.events[0].last_trade.seconds
+    
 
     while True:
+        list_of_events, lookup_symbols, seq_id, start_time = queue.get(block=True)
         print(batch_num)
         batch_num += 1
 
-        list_of_events = list()
-        num_threads = 4
-        for i in range(num_threads):
-            list_of_events.append(list())
-
-        for e in batch.events:
-            index = hash(e.symbol) % num_threads
-            list_of_events[index].append(e)
+        num_threads = len(list_of_events)
 
         threads = list()
 
@@ -126,7 +119,7 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         q1_indicators = list()
         all_crossovers = list()
 
-        for symbol in batch.lookup_symbols:
+        for symbol in lookup_symbols:
             if symbol not in trackers:
                 continue
 
@@ -138,14 +131,26 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
             all_crossovers.extend(crossovers)
 
         benchmark.submit_q1(
-            batch_id=batch.seq_id, indicators=q1_indicators
+            batch_id=seq_id, indicators=q1_indicators
         )
 
-        benchmark.submit_q2(batch_id=batch.seq_id, crossover_events=all_crossovers)
+        benchmark.submit_q2(batch_id=seq_id, crossover_events=all_crossovers)
         
         queue.task_done()
         batch = queue.get(block=True)
-    
+
+
+
+# class ProcessBatches (threading.Thread):
+#     def __init__(self, benchmark, count, lock, queue):
+#         threading.Thread.__init__(self)
+#         self.benchmark = benchmark
+#         self.count = count
+#         self.lock = lock,
+#         self.queue = queue
+
+#     def run(self):
+#         for batch in self.benchmark.get_batch
 
 def main():
     benchmark = Benchmark(
@@ -157,9 +162,26 @@ def main():
     queue = Queue(maxsize=30)
 
     threading.Thread(target=batch_processor, daemon=True, args=(benchmark, queue)).start()
+
+    num_threads = 4
+    start_time = 0
     
     for batch in benchmark.get_batches():
-        queue.put(batch, block=True)
+        if start_time == 0:
+            start_time = batch.events[0].last_trade.seconds
+
+        list_of_events = list()
+
+        for i in range(num_threads):
+            list_of_events.append(list())
+
+        for e in batch.events:
+            index = hash(e.symbol) % num_threads
+            list_of_events[index].append(e)
+
+        obj = (list_of_events, batch.lookup_symbols, batch.seq_id, start_time)
+
+        queue.put(obj, block=True)
         # print("size:", queue.qsize())
 
 if __name__ == "__main__":
