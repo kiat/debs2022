@@ -7,15 +7,6 @@ from google.protobuf.timestamp_pb2 import Timestamp
 import messages.challenger_pb2 as ch
 import threading
 
-def max_events(e1: ch.Event, e2: ch.Event) -> ch.Event:
-    if e2 is None or e1.last_trade.seconds > e2.last_trade.seconds:
-        return e1
-    
-    if e1.last_trade.seconds == e2.last_trade.seconds:
-        return e1 if e1.last_trade.nanos >= e2.last_trade.nanos else e2
-    
-    return e2
-
 def get_crossover(ema_38, ema_100, cur_38, cur_100, e):
     type = None
     if ema_38 <= ema_100 and cur_38 > cur_100:
@@ -34,7 +25,6 @@ def get_crossover(ema_38, ema_100, cur_38, cur_100, e):
     return None
 
 class Tracker:
-    
     def __init__(self, symbol: str, reference: int) -> None:
         self.symbol = symbol
         self.start_time = reference
@@ -137,20 +127,66 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         benchmark.submit_q2(batch_id=seq_id, crossover_events=all_crossovers)
         
         queue.task_done()
-        batch = queue.get(block=True)
+
+# class used to ensure that pre-processed batches are put into the queue in the correct order
+class Counter:
+    def __init__(self) -> None:
+        self.value = 1
+        self.lock = threading.Lock()
+        self.event = threading.Event()
+
+    def is_value(self, num):
+        if self.value != num:
+            self.event.wait()
+            return False  
+        return True
+
+    def increment(self):
+        with self.lock:
+            self.value += 1
+            self.event.set()
+            self.event.clear()
+
+# split a batch in the num_thread number of lists 
+def split_batch(batch, num_threads, start_time):
+    list_of_events = list()
+
+    for i in range(num_threads):
+        list_of_events.append(list())
+
+    for e in batch.events:
+        index = hash(e.symbol) % num_threads
+        list_of_events[index].append(e)
+
+    return list_of_events, batch.lookup_symbols, batch.seq_id, start_time
 
 
+class ProcessBatches (threading.Thread):
+    def __init__(self, benchmark, counter, queue, start_time, num_consumers):
+        threading.Thread.__init__(self)
+        self.benchmark = benchmark
+        self.counter = counter
+        self.queue = queue
+        self.start_time = start_time
+        self.num_consumers = num_consumers        
 
-# class ProcessBatches (threading.Thread):
-#     def __init__(self, benchmark, count, lock, queue):
-#         threading.Thread.__init__(self)
-#         self.benchmark = benchmark
-#         self.count = count
-#         self.lock = lock,
-#         self.queue = queue
+    def run(self):
+        while self.benchmark.has_next():
+            batch = self.benchmark.next()
+            obj = split_batch(batch, self.num_consumers, self.start_time)
+            
+            # wait for counter to equal batch num 
+            while not self.counter.is_value(obj[2]):
+                pass
 
-#     def run(self):
-#         for batch in self.benchmark.get_batch
+            # print("batch num: ", obj[2], flush=True)
+            # at this point counter == batch_num
+            self.queue.put(obj, block=True)
+
+            # increment counter so next batch can be put into the queue
+            self.counter.increment()
+
+
 
 def main():
     benchmark = Benchmark(
@@ -161,28 +197,37 @@ def main():
     
     queue = Queue(maxsize=30)
 
-    threading.Thread(target=batch_processor, daemon=True, args=(benchmark, queue)).start()
+    consumer_main = threading.Thread(target=batch_processor, daemon=True, args=(benchmark, queue))
+    consumer_main.start()
 
-    num_threads = 4
+    num_producers = 2
+    num_consumers = 4
     start_time = 0
     
-    for batch in benchmark.get_batches():
-        if start_time == 0:
-            start_time = batch.events[0].last_trade.seconds
+    benchmark.start()
 
-        list_of_events = list()
+    benchmark.has_next()
+    batch = benchmark.next()
+    start_time = batch.events[0].last_trade.seconds
 
-        for i in range(num_threads):
-            list_of_events.append(list())
+    queue.put(split_batch(batch, num_consumers, start_time), block=True)
 
-        for e in batch.events:
-            index = hash(e.symbol) % num_threads
-            list_of_events[index].append(e)
+    threads = list()
+    counter = Counter()
 
-        obj = (list_of_events, batch.lookup_symbols, batch.seq_id, start_time)
+    for i in range(num_producers):
+        threads.append((ProcessBatches(benchmark, counter, queue, start_time, num_consumers)))
 
-        queue.put(obj, block=True)
-        # print("size:", queue.qsize())
+    for i in range(num_producers):
+        threads[i].start()
+    
+    for i in range(num_producers):
+        threads[i].join()
+    
+    queue.join()
+
+    print("stop benchmark")
+    benchmark.stop()
 
 if __name__ == "__main__":
     main()
