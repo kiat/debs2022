@@ -1,3 +1,5 @@
+from concurrent.futures import thread
+from re import sub
 from challenge_benchmark import Benchmark
 from typing import Dict, List, Tuple
 from collections import defaultdict
@@ -6,6 +8,15 @@ from google.protobuf.timestamp_pb2 import Timestamp
 
 import messages.challenger_pb2 as ch
 import threading
+import time
+
+eval_event_time = 0
+lookup_symbol_time = 0
+lookup_loop_time = 0
+lookup_submit_time = 0 
+
+def get_time():
+    return round(time.time() * 1000)
 
 def get_crossover(ema_38, ema_100, cur_38, cur_100, e):
     type = None
@@ -81,11 +92,19 @@ class ProcessEvents (threading.Thread):
             tracker = self.trackers[e.symbol]
             tracker.eval_event(e)
 
+def submit_results(benchmark, seq_id, q1_indicators, all_crossovers):
+    benchmark.submit_q1(batch_id=seq_id, indicators=q1_indicators)
+    benchmark.submit_q2(batch_id=seq_id, crossover_events=all_crossovers)
 
 def batch_processor(benchmark: Benchmark, queue: Queue):
     trackers = {}
     
     batch_num = 0
+
+    global eval_event_time
+    global lookup_symbol_time
+    global lookup_loop_time
+    global lookup_submit_time 
     
 
     while True:
@@ -96,7 +115,7 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         num_threads = len(list_of_events)
 
         threads = list()
-
+        start = get_time()
         for i in range(num_threads):
             threads.append((ProcessEvents(trackers, list_of_events[i], start_time)))
 
@@ -106,8 +125,13 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         for i in range(num_threads):
             threads[i].join()
 
+        eval_event_time += get_time() - start
+
         q1_indicators = list()
         all_crossovers = list()
+
+        start = get_time()
+        loopStart = get_time()
 
         for symbol in lookup_symbols:
             if symbol not in trackers:
@@ -120,13 +144,17 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
             q1_indicators.append(indicator)
             all_crossovers.extend(crossovers)
 
-        benchmark.submit_q1(
-            batch_id=seq_id, indicators=q1_indicators
-        )
+        lookup_loop_time += get_time() - loopStart
 
-        benchmark.submit_q2(batch_id=seq_id, crossover_events=all_crossovers)
+        submitStart = get_time()
+
+        threading.Thread(target=submit_results, daemon=True, args=(benchmark, seq_id, q1_indicators, all_crossovers)).start()
         
         queue.task_done()
+
+        lookup_submit_time += get_time() - submitStart
+
+        lookup_symbol_time += get_time() - start
 
 # class used to ensure that pre-processed batches are put into the queue in the correct order
 class Counter:
@@ -179,7 +207,7 @@ class ProcessBatches (threading.Thread):
             while not self.counter.is_value(obj[2]):
                 pass
 
-            # print("batch num: ", obj[2], flush=True)
+            print("batch num: ", obj[2], flush=True)
             # at this point counter == batch_num
             self.queue.put(obj, block=True)
 
@@ -200,7 +228,7 @@ def main():
     consumer_main = threading.Thread(target=batch_processor, daemon=True, args=(benchmark, queue))
     consumer_main.start()
 
-    num_producers = 2
+    num_producers = 4
     num_consumers = 4
     start_time = 0
     
@@ -227,6 +255,10 @@ def main():
     queue.join()
 
     print("stop benchmark")
+    print("eval event time: ", eval_event_time, eval_event_time / 992)
+    print("lookup time: ", lookup_symbol_time, lookup_symbol_time / 992)
+    print("lookup_loop_time: ", lookup_loop_time, lookup_loop_time / 992)
+    print("lookup_submit_time: ", lookup_submit_time, lookup_submit_time / 992)
     benchmark.stop()
 
 if __name__ == "__main__":
