@@ -196,7 +196,7 @@ class ProcessBatches (threading.Thread):
 def main():
     benchmark = Benchmark(
         token="zqultcyalnowfgxjlzlsztkcquycninr",
-        benchmark_name="new method - david",
+        benchmark_name="benchmark",
         benchmark_type="test",
     )
     

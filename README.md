@@ -1,14 +1,15 @@
 # Debs2022
 
 ## Running locally
-
-### Configuration file
-File `cloud.properties` contains `host:port` definitions for each worker.  
-Workers will automatically find their configuration in the properties file.
-
-### Running workers
-For each worker process, run:
+Install the required packages
 ```shell
-gradlew runWorker
+pip install grpcio
+pip install grpcio-tools
+```
+
+Running the code
+```shell
+cd python/
+python3 naive_solution.py
 ```
 
