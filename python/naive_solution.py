@@ -114,8 +114,8 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         for i in range(num_threads):
             threads[i].join()
 
-        q1_indicators = np.array()
-        all_crossovers = np.array()
+        q1_indicators = list()
+        all_crossovers = list()
 
         for symbol in lookup_symbols:
 
@@ -127,8 +127,7 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
             indicator, crossovers = tracker.get_results()
 
             q1_indicators.append(indicator)
-            # all_crossovers.extend(crossovers)
-            all_crossovers.append(crossovers)
+            all_crossovers.extend(crossovers)
 
 
         threading.Thread(target=submit_results, daemon=True, args=(benchmark, seq_id, q1_indicators, all_crossovers)).start()
