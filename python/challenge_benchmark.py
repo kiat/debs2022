@@ -1,6 +1,7 @@
 import grpc
 import messages.challenger_pb2 as ch
 import messages.challenger_pb2_grpc as api
+import threading
 
 from typing import Optional
 
@@ -33,6 +34,7 @@ class Benchmark:
         self.benchmark = self.stub.createNewBenchmark(self.config)
         self.started = False
         self.ended = False
+        self.lock = threading.Lock()
 
     def start(self):
         # Do nothing if already started.
@@ -44,12 +46,6 @@ class Benchmark:
         self.stub.startBenchmark(self.benchmark)
 
     def stop(self):
-        # Do nothing if already ended.
-        if self.ended:
-            return
-
-        self.ended = True
-        self.started = False
         self.stub.endBenchmark(self.benchmark)
 
     def next_batch(self):
@@ -72,16 +68,18 @@ class Benchmark:
             crossover_events=crossover_events,
         )
         self.stub.resultQ2(result)
-    
-    def get_batches(self):
-        if self.started:
-            return
 
-        self.start()
-        while True:
-            batch = self.next_batch()
-            yield batch
+    def has_next(self):
+        self.lock.acquire()
+        if not self.ended:
+            return True
+        self.lock.release()
+        return False
 
-            if batch.last or self.ended:
-                self.stop()
-                break
+    def next(self):
+        batch = self.next_batch()
+        if batch.last:
+            self.ended = True
+        self.lock.release()
+        return batch
+
