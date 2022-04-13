@@ -48,7 +48,9 @@ class Tracker:
             weighted_second = lambda prev_w, j: prev_w * (1 - (2 / (1 + j)))
             ema_j = lambda closing, prev_w, j: weighted_first(closing, j) + weighted_second(prev_w, j)
 
-            last_trade_price = self.latest_event.last_trade_price
+            last_trade_price = 0
+            if self.latest_event is not None:
+                last_trade_price = self.latest_event.last_trade_price
             cur_38 = ema_j(last_trade_price, self.prev_ema_38, 38)
             cur_100 = ema_j(last_trade_price, self.prev_ema_100, 100)
 
