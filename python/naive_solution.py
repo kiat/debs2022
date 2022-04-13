@@ -35,7 +35,7 @@ class Tracker:
         self.prev_ema_100 = 0
         self.latest_event = None
         self.crossovers = list()
-    
+   
     def eval_event(self, event: ch.Event) -> None:
         # index is 0 which means current window is still open
         # or index is > 0 which means current window has now closed
@@ -68,7 +68,7 @@ class Tracker:
             # update start time to be the start of the new window
             self.start_time += index * (5 * 60)
             self.latest_event = event
-    
+            
     def get_results(self) -> Tuple[ch.Indicator, List[ch.CrossoverEvent]]:
         return ch.Indicator(symbol= self.symbol, ema_38=self.prev_ema_38, ema_100=self.prev_ema_100), self.crossovers
     
@@ -114,19 +114,22 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
         for i in range(num_threads):
             threads[i].join()
 
-        q1_indicators = list()
-        all_crossovers = list()
+        q1_indicators = np.array()
+        all_crossovers = np.array()
 
         for symbol in lookup_symbols:
+
             if symbol not in trackers:
                 continue
 
             tracker = trackers[symbol]
-            
+
             indicator, crossovers = tracker.get_results()
-            
+
             q1_indicators.append(indicator)
-            all_crossovers.extend(crossovers)
+            # all_crossovers.extend(crossovers)
+            all_crossovers.append(crossovers)
+
 
         threading.Thread(target=submit_results, daemon=True, args=(benchmark, seq_id, q1_indicators, all_crossovers)).start()
         

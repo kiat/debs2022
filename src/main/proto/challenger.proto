@@ -76,6 +76,22 @@ message BenchmarkConfiguration {
   repeated Query queries = 4;
 }
 
+message ResultRequest {
+  int64 seq_id = 1;
+}
+
+message ResultResponse {
+  int64 seq_id = 1;
+  ResultQ1 query_1_result = 2;
+  ResultQ2 query_2_result = 3;
+}
+
+service Worker {
+  rpc submitMiniBatch(Batch) returns (google.protobuf.Empty);
+  rpc getResults(ResultRequest) returns (ResultResponse);
+  rpc check(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
 service Challenger {
 
   //Create a new Benchmark based on the configuration
