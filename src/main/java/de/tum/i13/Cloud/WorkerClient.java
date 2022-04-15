@@ -3,8 +3,6 @@ package de.tum.i13.Cloud;
 
 import com.google.protobuf.Empty;
 import de.tum.i13.challenge.Batch;
-import de.tum.i13.challenge.ResultRequest;
-import de.tum.i13.challenge.ResultResponse;
 import de.tum.i13.challenge.WorkerGrpc;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -13,38 +11,33 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 
 public class WorkerClient {
     private static final Logger log = LogManager.getLogger(WorkerClient.class);
-    private final WorkerGrpc.WorkerBlockingStub blockingStub;
+    private final LinkedList<WorkerGrpc.WorkerBlockingStub> workers;
 
-    public WorkerClient(Channel channel) {
-        this.blockingStub = WorkerGrpc.newBlockingStub(channel);
-    }
-
-    public boolean isAvailable() {
-        try {
-            this.blockingStub.check(Empty.newBuilder().build());
-            return true;
-        } catch (Exception e) {
-            return false;
+    public WorkerClient(Iterable<Channel> channels) {
+        this.workers = new LinkedList<>();
+        for (Channel c : channels) {
+            this.workers.add(WorkerGrpc.newBlockingStub(c));
         }
     }
 
-    public void submitMiniBatch(Batch batch) {
-        this.blockingStub.submitMiniBatch(batch);
-    }
+    public static WorkerClient fromConfig(int hostNum, Configuration conf) {
+        Configuration.HostConfig[] hosts = conf.getHosts();
+        LinkedList<Channel> channels = new LinkedList<>();
 
-    public ResultResponse getResults(ResultRequest request) {
-        return this.blockingStub.getResults(request);
-    }
-
-    public static WorkerClient getClient(String target) {
-        ManagedChannel channel = ManagedChannelBuilder.forTarget(target)
-                .usePlaintext()
-                .build();
-
-        return new WorkerClient(channel);
+        for (int i = 0; i < hosts.length; i++) {
+            if (i != hostNum) {
+                channels.add(ManagedChannelBuilder
+                        .forAddress(hosts[i].getHost(), hosts[i].getPort())
+                        .usePlaintext()
+                        .build()
+                );
+            }
+        }
+        return new WorkerClient(channels);
     }
 }

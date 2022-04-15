@@ -76,20 +76,20 @@ message BenchmarkConfiguration {
   repeated Query queries = 4;
 }
 
-message ResultRequest {
+message EMABroadcast {
   int64 seq_id = 1;
+  repeated Indicator indicators = 2;
 }
 
-message ResultResponse {
+message Window {
   int64 seq_id = 1;
-  ResultQ1 query_1_result = 2;
-  ResultQ2 query_2_result = 3;
+  repeated Event events = 2;
 }
 
 service Worker {
-  rpc submitMiniBatch(Batch) returns (google.protobuf.Empty);
-  rpc getResults(ResultRequest) returns (ResultResponse);
-  rpc check(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc initialize(Benchmark) returns (google.protobuf.Empty);
+  rpc broadcast(EMABroadcast) returns (google.protobuf.Empty);
+  rpc broadcastWindow(Window) returns (google.protobuf.Empty);
 }
 
 service Challenger {

@@ -5,14 +5,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.*;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 public class Configuration {
     private static final Logger log = LogManager.getLogger(Configuration.class);
 
-    private Properties properties;
+    private final Properties properties;
 
     public Configuration(String configFile) {
         this.properties = new Properties();
@@ -24,58 +23,52 @@ public class Configuration {
         }
     }
 
-    public List<String> getHosts() {
-        List<String> results = new LinkedList<>();
-        String host;
+    public HostConfig getHost(int hostNum) {
+        String val = this.properties.getProperty("cloud.workers." + hostNum);
+        String isMaster = this.properties.getProperty("cloud.workers." + hostNum + "master");
 
-        // iterate over all servers.*.host and servers.*.port to discover servers
-        for(int i = 0; (host = this.properties.getProperty("cloud.workers." + i)) != null; i++) {
-            results.add(host);
-        }
-
-        return results;
-    }
-
-    public List<String> getMyHosts() {
-        Iterator<NetworkInterface> it;
-        Map<InetAddress, List<String>> validAddresses = new HashMap<>();
-
-        // make a map from network address to ServerConfig
-        for (String host : getHosts()) {
-            try {
-                InetAddress inet = InetAddress.getByName(Utils.getAddr(host));
-                if (!validAddresses.containsKey(inet)) {
-                    validAddresses.put(inet, new LinkedList<>());
-
-                }
-                validAddresses.get(inet).add(host);
-            } catch (UnknownHostException e) {
-                log.warn("unknown host " + host);
-            }
-        }
-
-        // get an iterator of network interfaces
-        NetworkInterface ni;
-
-        try {
-            it = NetworkInterface.getNetworkInterfaces().asIterator();
-        } catch (SocketException e) {
-            log.error("could not discover ip address");
+        if (val == null) {
+            log.warn("host not found");
             return null;
         }
 
-        // check if there is a network address in any interface that matches
-        // a configuration in config file
-        List<String> myHosts = new LinkedList<>();
+        return new HostConfig(val, isMaster != null && isMaster.equals("true"));
+    }
 
-        while (it.hasNext()) {
-            ni = it.next();
-            ni.getInterfaceAddresses().stream()
-                    .map(InterfaceAddress::getAddress)
-                    .filter(validAddresses::containsKey)
-                    .map(validAddresses::get)
-                    .forEach(myHosts::addAll);
+    public HostConfig[] getHosts() {
+        List<HostConfig> results = new LinkedList<>();
+        String host;
+
+        for(int i = 0; (host = this.properties.getProperty("cloud.workers." + i)) != null; i++) {
+            String isMaster = this.properties.getProperty("cloud.workers." + i + "master");
+            results.add(new HostConfig(host, isMaster != null && isMaster.equals("true")));
         }
-        return myHosts;
+
+        return results.toArray(new HostConfig[0]);
+    }
+
+    static public class HostConfig {
+        private final String host;
+        private final int port;
+        private final boolean isMaster;
+
+        public HostConfig(String hostAndPort, boolean isMaster) {
+            String[] tokens = hostAndPort.split(":");
+            this.host = tokens[0];
+            this.port = Integer.parseInt(tokens[1]);
+            this.isMaster = false;
+        }
+
+        public boolean isMaster() {
+            return isMaster;
+        }
+
+        public String getHost() {
+            return host;
+        }
+
+        public int getPort() {
+            return port;
+        }
     }
 }
