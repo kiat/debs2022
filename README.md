@@ -1,15 +1,31 @@
 # Debs2022
 
 ## Running locally
-Install the required packages
+Change into the `python` directory.
+
+**Install the required packages**:
+
 ```shell
-pip install grpcio
+pip3 install grpcio
 pip install grpcio-tools
 ```
 
-Running the code
+Or use:
 ```shell
-cd python/
-python3 naive_solution.py
+pip3 install -r requirements.txt
 ```
 
+**Create the Protobuf messages**:
+```shell
+make messages
+```
+**Running the code**:
+```shell
+python3 solution.py
+```
+
+**Options**:
+```shell
+python3 solution.py --help
+```
+Able to tune the number of producers, consumers, and the queue size for the producers and consumers.
