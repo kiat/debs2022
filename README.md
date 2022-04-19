@@ -24,6 +24,15 @@ make messages
 python3 solution.py
 ```
 
+Run it with different number of Event Consumer and Producers and queue size based on avaialble CPU and RAM. 
+
+
+```shell
+python3 solution.py  --num_producers 4 --num_consumers 16 --queue_size 10 
+```
+
+
+
 **Options**:
 ```shell
 python3 solution.py --help
