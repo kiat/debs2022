@@ -26,10 +26,22 @@ Different data models and serialization have a huge impact on data processing pe
 
 
 
+Exponential Moving Average (EMA)
+
+\begin{align*}
+    EMA_t = \begin{cases} 
+        Y_0 &  t = 0 \\ 
+        \alpha Y_t + (1-\alpha) EMA_{t-1}& t>0 \\ 
+        \end{cases}
+\end{align*}
+
+The coefficient $\alpha$ represents the degree of weighting decrease, a constant smoothing factor between 0 and 1.
+For this challenge $\alpha = \frac{2}{1+j}$ where $j$ is a smoothing factor with $j \in \{38, 100 \}$
+$EMA_{38}$ refers to exponential moving average with smoothing factor of 38 and  $EMA_{100}$ has a smoothing factor of 100. 
 
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{./images/stock_example.png}
+        \includegraphics[width=0.42\textwidth]{./images/stock_example.png}
         \label{fig:stock}
         \caption{An Example of Stock Price Fluctuations Over Time}
     \end{center}
@@ -39,9 +51,9 @@ Different data models and serialization have a huge impact on data processing pe
 
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{./images/query2_example_200.png}
+        \includegraphics[width=0.42\textwidth]{./images/query2_example_200.png}
         \label{fig:EMA200}
-        \caption{ }
+        \caption{Exponential Moving Average of 38 and 100}
     \end{center}
 \end{figure}
 
@@ -49,8 +61,8 @@ Different data models and serialization have a huge impact on data processing pe
 
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{./images/query2_example.png}
+        \includegraphics[width=0.42\textwidth]{./images/query2_example.png}
         \label{fig:EMAs}
-        \caption{Example of Query 2 - Buy and Sell advice based on EMA 38 and 100 }
+        \caption{Example of Query 2 - Buy and Sell advice based on Breakout Patterns of EMA 38 and 100 }
     \end{center}
 \end{figure}
