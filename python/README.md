@@ -1,4 +1,50 @@
-# Step 0
+# Debs2022
+
+## Running locally
+Change into the `python` directory.
+
+**Install the required packages**:
+
+```shell
+pip3 install grpcio
+pip install grpcio-tools
+```
+
+Or use:
+```shell
+pip3 install -r requirements.txt
+```
+
+**Create the Protobuf messages**:
+```shell
+make messages
+```
+**Running the code**:
+```shell
+python3 solution.py
+```
+
+Run it with different number of Event Consumer and Producers and queue size based on avaialble CPU and RAM. 
+
+
+```shell
+python3 solution.py  --num_producers 4 --num_consumers 16 --queue_size 10 
+```
+
+
+
+**Options**:
+```shell
+python3 solution.py --help
+```
+Able to tune the number of producers, consumers, and the queue size for the producers and consumers.
+
+
+# Documentations from Organizers. 
+
+
+
+### Step 0
 Generate the client code, as example, we use Python. For other languages check the documentation
 
 ```   
@@ -7,13 +53,13 @@ pip install grpcio
 pip install grpcio-tools
 ```
 
-# Generate client code
+### Generate client code
 
 ```
 python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. challenger.proto
 ```
     
-# Step 0
+### Step 0
 Initilize the client stub from the generated code
 
 ```     
@@ -26,7 +72,7 @@ with grpc.insecure_channel('challenge.msrg.in.tum.de:5023', options=op) as chann
     stub = api.ChallengerStub(channel)
 ```     
     
-# Step 1
+### Step 1
 Create a new Benchmark. You have set your token (see profile), set a benchmark name (this is only shown in your statistics) and the batchsize. The benchmark_type should be set to "test" if you experiment. Also add the list of which queries you want to run, either just one, [Q1] or [Q2] or both at the same time [Q1, Q2].
 
 ```     
@@ -39,7 +85,7 @@ benchmark = stub.createNewBenchmark(benchmarkconfiguration)
 
 ```     
     
-# Step 2
+### Step 2
 First start the Benchmark. This sets the timestamp server side for the throughput measurments. Then process all the batches. The batches are correlated for the latency measurements.
 
 Once you called the endBenchmark RPC, we calculate the results. For testing, you can call endBenchmark early, e.g., after 100 batches.
@@ -48,7 +94,7 @@ Once you called the endBenchmark RPC, we calculate the results. For testing, you
 stub.startBenchmark(benchmark)
 ```     
     
-# Step 3
+### Step 3
 Start processing events!
 
 ```     
