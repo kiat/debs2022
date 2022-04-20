@@ -35,7 +35,7 @@ and $EMA_{100}$ for a smoothing factor of 100.
 
 \begin{figure*}[!ht]
     \begin{center}
-        \includegraphics[width=0.90\textwidth]{./images/query2_example.png}
+        \includegraphics[width=0.70\textwidth]{./images/query2_example.png}
         \caption{Example of Query 2 - Buy and Sell advice based on Breakout Patterns of EMA 38 and 100 }
         \label{fig:EMAs}
     \end{center}
@@ -64,19 +64,21 @@ one can improve the performance of the query 2 by skipping the first 200 events 
 $EMA_{38}$ and $EMA_{100}$ have still a large difference. 
 
 
-
-
-The main challenge is to process the stream of events and achieve high throughput and low latency. 
+The main challenge task was to process the stream of events and achieve high throughput and low latency. 
 Many open source and commercial stream processing systems are developed that one can use to develop this challenge. 
-
+Esper event stream processing system \cite{Bernhardt2007} is a system that can detect complex events based on pre-defined temporal logic patterns. 
+In this task we do not have a complex pattern to extract and computation are basic computation of EMA 38 and 100, and a subsequent check if the values for 
+query 2 to submit a sell or buy advice. Other systems like Apache Storm \cite{8288619}, Apache Spark Streaming \cite{zaharia2010spark} or 
+Apache Flink streaming \cite{alexandrov2014stratosphere} are developed to achieve high-scalability in processing the data stream. 
+We decided to implement the DEBS grand challenge from scratch and without using any of the existing systems because most of them 
+have a different target with a large start-up delay which might impact our stream processing performance. 
 
 % High-Performance computing problems 
-
 % Scalability issues 
 
 \begin{figure}[!ht]
     \begin{center}
-        \includegraphics[width=0.42\textwidth]{./images/query2_example_200.png}
+        \includegraphics[width=0.4\textwidth]{./images/query2_example_200.png}
         \caption{Exponential Moving Average of 38 and 100 for the first 400 events.}
         \label{fig:EMA200}
     \end{center}
@@ -86,11 +88,9 @@ Many open source and commercial stream processing systems are developed that one
 
 
 
-Apache Storm \cite{8288619}
 
-Apache Spark Streaming \cite{zaharia2010spark}, Apache Flink streaming \cite{alexandrov2014stratosphere}
 
-Esper event stream processing system \cite{Bernhardt2007}
+
 
 
 Different data models and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
