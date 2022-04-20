@@ -5,6 +5,7 @@ brokers specify based on patterns on event stream of stock market. Such algorith
 history of event stream and by utilizing moving averages of stock prices and trading volumes. The real-time extraction of 
 such patterns to trigger buy or sell trading decisions is the task of high-scalable event stream processing systems. 
 
+% Describe briefly what the challenge is 
 This year's DEBS Grand Challenge \cite{debs2022challenge} describes a system implementation based on two specific queries 
 stock market event streams. The first query computes is defined to compute the Exponential Moving Average (EMA) with two different smoothing factors 
 of 38 and 100. Exponential Moving Average is one of the moving averages and is defined as follows:
@@ -41,6 +42,9 @@ and $EMA_{100}$ for a smoothing factor of 100.
 \end{figure*}
 
 
+
+
+% Describe the query 1 and 2 
 Figure \ref{fig:stock} illustrates an example of stock market price changes over time. The graph shows 1000 events with 
 different prices. Figure \ref{fig:EMA200} depicts the values of exponential moving average with 
 smoothing factors of 38 and 100. We can observe in Figure \ref{fig:EMA200} how the value grows exponentially 
@@ -50,8 +54,6 @@ The query 2 of the DEBS2022 challenge \cite{debs2022challenge} is specified base
 that $EMA_{38}$ breaks out of the value of $EMA_{100}$ a stock buy advice notification should be generated and if
 $EMA_{100}$ goes under the $EMA_{38}$ a stock sell advice. For further detail description of the DEBS 2022 
 grand challenge, we would refer the readers to \cite{debs2022challenge}. 
-
-
 
 This is visualized in Figure \ref{fig:EMAs} which the same graph as we have in Figure \label{fig:EMAs} by 
 zooming into the graph to see the values and their differentiations. One important observation in 
@@ -64,19 +66,13 @@ $EMA_{38}$ and $EMA_{100}$ have still a large difference.
 
 
 
-
-% Describe briefly what the challenge is 
-
-% describe the query 1 
-
-% describe the query 2 
+The main challenge is to process the stream of events and achieve high throughput and low latency. 
+Many open source and commercial stream processing systems are developed that one can use to develop this challenge. 
 
 
 % High-Performance computing problems 
-% Scalability issues
 
-
-
+% Scalability issues 
 
 \begin{figure}[!ht]
     \begin{center}
@@ -90,12 +86,13 @@ $EMA_{38}$ and $EMA_{100}$ have still a large difference.
 
 
 
+Apache Storm \cite{8288619}
 
-
-Spark Streaming \cite{zaharia2010spark}, Apache Flink streaming \cite{alexandrov2014stratosphere}
+Apache Spark Streaming \cite{zaharia2010spark}, Apache Flink streaming \cite{alexandrov2014stratosphere}
 
 Esper event stream processing system \cite{Bernhardt2007}
 
 
 Different data models and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
 
+Benchmark are developed \cite{DBLP:conf/cloud/SikdarTJ17} \cite{8701904}
