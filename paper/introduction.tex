@@ -70,8 +70,14 @@ Esper event stream processing system \cite{Bernhardt2007} is a system that can d
 In this task we do not have a complex pattern to extract and computation are basic computation of EMA 38 and 100, and a subsequent check if the values for 
 query 2 to submit a sell or buy advice. Other systems like Apache Storm \cite{8288619}, Apache Spark Streaming \cite{zaharia2010spark} or 
 Apache Flink streaming \cite{alexandrov2014stratosphere} are developed to achieve high-scalability in processing the data stream. 
-We decided to implement the DEBS grand challenge from scratch and without using any of the existing systems because most of them 
-have a different target with a large start-up delay which might impact our stream processing performance. 
+Also, different benchmarks are developed \cite{DBLP:conf/cloud/SikdarTJ17} \cite{8701904} which compare these systems with each other regarding specific data 
+stream processing tasks. 
+
+After considering all of the existing systems, We decided to implement the DEBS grand challenge from scratch and without using any of the existing systems 
+because most of them have a different target with a large start-up delay which might impact our stream processing performance. The first implementation is a 
+prototype of the system in python because we would like to make sure that we understand the logic of these two queries and can run tests to check if the 
+data streams are processed correctly, and the correct trading advices are submitted to the DEBS2022 evaluation system. 
+
 
 % High-Performance computing problems 
 % Scalability issues 
@@ -85,14 +91,10 @@ have a different target with a large start-up delay which might impact our strea
 \end{figure}
 
 
+The next subsequent sections describe details of our implementation. Section \ref{sec:concepts} describes our ideas for 
+stream processing using multiple processing threads on a single machine with multiple CPU cores. Further we describe how the same 
+architecture can be extended to process the data stream on a cluster of machines.  
 
 
 
 
-
-
-
-
-Different data models and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
-
-Benchmark are developed \cite{DBLP:conf/cloud/SikdarTJ17} \cite{8701904}
