@@ -35,9 +35,9 @@ consumer does not read the entire batch to filter out the stock symbols.
 
 Figures \ref{fig:parallel-srream-processing} and \ref{fig:batch-distributions} illustrate how the system design would be if we have included an event dispatcher
 and an event submitter. We do not have a dispatcher and submitter because of efficiency reasons and because of correctness of query processing. 
-If we dispatch the event batches as shown in Figure \ref{fig:parallel-srream-processing} for example by doing round-robin batch distribution, then each 
-consumer has to work on all stock symbols or on a subset of them. If it works on all of the stocks, then each consumer requires to know the previous 
-moving averages from the immediate past batch to compute the new EMAs for this batch, and this is not possible because 
+If we dispatch the event batches as shown in Figure \ref{fig:parallel-srream-processing}, for example by round-robin batch distribution, then each 
+consumer has to work on all stock symbols or on a subset of them. If consumer work on all of the stocks, then each consumer requires to know the previous 
+moving averages from the immediate past batch to compute the new EMAs for this batch, and this would cause incorrect processing because 
 consumer should work in parallel distributed design without any dependencies on each other's results. In the latter case, if the consumers 
 work on a subset of stocks then we need to pass every single batch to all of them and it is better 
 to this task in an integrated form with reading from the queue.
@@ -82,14 +82,17 @@ cluster of machines each with multiple CPU cores. Our first rapid alpha implemen
 that we understand the challenge tasks and be able to process the queries in correct form.  
 
 
+We realized that the processing task of the query 2 is a very simple computation that can be integrated with the query 1 task. 
+The listing \ref{lst:query2} provides a simple python function that we use to check if we have match for a breakout pattern. 
+
 % Discuss the details of implementation. 
+% Add code how we do the Query 2. 
 
 
-% add code how we do the Query 2. 
 
 
 \begin{minipage}{0.9\linewidth}
-\begin{lstlisting}[caption={Query 2}, label={lst:createDataFrame4},language=Python]
+\begin{lstlisting}[caption={The computation for Query 2 - Breakout Patterns of EMA38 and EMA100}, label={lst:query2},language=Python]
 def get_crossover(
     ema_38: float,
     ema_100: float,
@@ -174,11 +177,12 @@ return None
 % \end{lstlisting}
 % \end{minipage}
     
-    
+\textbf{Cluster Implementation.}\\
+The architecture on Figure \ref{fig:parallel-srream-processing} can be implemented in on a cluster of machines.
+The cache to store the stream batches can be implemented using a shared memory on a single machine or using a service bus
+like Apache Kafka\footnote{\url{https://kafka.apache.org/}} or Apache Camel \footnote{\url{https://camel.apache.org/}} to store 
+the events and let multiple consumer clients access the streaming data batches.  
 
-
-
-Different data models and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
-
-
-Data Serialization \cite{DBLP:conf/cloud/SikdarTJ17}
+One other implementation detail is to use high-efficient data model and serialization framework when for the data transmission between 
+the processing nodes in serialized format. Studies have shown that choosing the correct data model and serialization 
+ have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
