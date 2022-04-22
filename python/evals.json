@@ -1,0 +1,626 @@
+[
+    {
+      "benchmarkId": 6445237014050734000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 246415359,
+          "q2Latency": 251002879
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 259129343,
+          "q2Latency": 262668287
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 264634367,
+          "q2Latency": 268304383
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 265945087,
+          "q2Latency": 270532607
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 274726911,
+          "q2Latency": 278659071
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 279969791,
+          "q2Latency": 283901951
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 287309823,
+          "q2Latency": 290717695
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 297009151,
+          "q2Latency": 299368447
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 7.702358531,
+      "q1Throughput": 128.9215499386885,
+      "q2Throughput": 128.7917195762125,
+      "q1_90Percentile": 265.945087,
+      "q2_90Percentile": 270.532607
+    },
+    {
+      "benchmarkId": 6228436344855340000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 237502463,
+          "q2Latency": 239337471
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 242745343,
+          "q2Latency": 244711423
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 247201791,
+          "q2Latency": 249167871
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 249167871,
+          "q2Latency": 251527167
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 253886463,
+          "q2Latency": 256245759
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 256376831,
+          "q2Latency": 258342911
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 258473983,
+          "q2Latency": 260308991
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 262406143,
+          "q2Latency": 264241151
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 7.396375339,
+      "q1Throughput": 134.25494982171293,
+      "q2Throughput": 134.11974846237587,
+      "q1_90Percentile": 249.167871,
+      "q2_90Percentile": 251.527167
+    },
+    {
+      "benchmarkId": 1619572463597370600,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 258998271,
+          "q2Latency": 261619711
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 268173311,
+          "q2Latency": 270270463
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 273678335,
+          "q2Latency": 276037631
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 275513343,
+          "q2Latency": 277872639
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 282066943,
+          "q2Latency": 286261247
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 289144831,
+          "q2Latency": 292814847
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 293863423,
+          "q2Latency": 296484863
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 298844159,
+          "q2Latency": 304611327
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.107561117,
+      "q1Throughput": 122.47826265754193,
+      "q2Throughput": 122.35492100330472,
+      "q1_90Percentile": 275.513343,
+      "q2_90Percentile": 277.872639
+    },
+    {
+      "benchmarkId": 3341907533043770400,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 268042239,
+          "q2Latency": 269484031
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 276037631,
+          "q2Latency": 277872639
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 282853375,
+          "q2Latency": 284688383
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 284164095,
+          "q2Latency": 285999103
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 289669119,
+          "q2Latency": 291766271
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 292814847,
+          "q2Latency": 294387711
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 295960575,
+          "q2Latency": 297271295
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 308281343,
+          "q2Latency": 309592063
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.391522478,
+      "q1Throughput": 118.3337115050745,
+      "q2Throughput": 118.21454361836244,
+      "q1_90Percentile": 284.164095,
+      "q2_90Percentile": 285.999103
+    },
+    {
+      "benchmarkId": 3592461873604799500,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 235274239,
+          "q2Latency": 238682111
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 245891071,
+          "q2Latency": 249561087
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 253886463,
+          "q2Latency": 259522559
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 258867199,
+          "q2Latency": 263454719
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 264372223,
+          "q2Latency": 267386879
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 266993663,
+          "q2Latency": 270270463
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 272629759,
+          "q2Latency": 276299775
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 289669119,
+          "q2Latency": 291504127
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 7.352697669,
+      "q1Throughput": 135.05247253489378,
+      "q2Throughput": 134.91646803083043,
+      "q1_90Percentile": 258.867199,
+      "q2_90Percentile": 263.454719
+    },
+    {
+      "benchmarkId": 7029810913233256000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 263979007,
+          "q2Latency": 265945087
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 276037631,
+          "q2Latency": 277872639
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 285474815,
+          "q2Latency": 287309823
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 289669119,
+          "q2Latency": 291766271
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 298057727,
+          "q2Latency": 299630591
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 301727743,
+          "q2Latency": 303562751
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 303562751,
+          "q2Latency": 305135615
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 308281343,
+          "q2Latency": 310116351
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.059761425,
+      "q1Throughput": 123.20463939787152,
+      "q2Throughput": 123.08056624641344,
+      "q1_90Percentile": 289.669119,
+      "q2_90Percentile": 291.766271
+    },
+    {
+      "benchmarkId": 9041807848630979000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 283377663,
+          "q2Latency": 284950527
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 292028415,
+          "q2Latency": 293601279
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 299892735,
+          "q2Latency": 301727743
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 301727743,
+          "q2Latency": 303300607
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 307232767,
+          "q2Latency": 308805631
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 321388543,
+          "q2Latency": 323485695
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 326631423,
+          "q2Latency": 328990719
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 329515007,
+          "q2Latency": 331350015
+        }
+      ],
+      "q1_count": 992,
+      "q2_count": 992,
+      "seconds": 8.600965649,
+      "q1Throughput": 115.33588674608133,
+      "q2Throughput": 115.33588674608133,
+      "q1_90Percentile": 301.727743,
+      "q2_90Percentile": 303.300607
+    },
+    {
+      "benchmarkId": 4568889030920979000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 295960575,
+          "q2Latency": 297533439
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 305659903,
+          "q2Latency": 307232767
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 311689215,
+          "q2Latency": 312999935
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 313786367,
+          "q2Latency": 315097087
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 316932095,
+          "q2Latency": 318767103
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 324796415,
+          "q2Latency": 327942143
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 335020031,
+          "q2Latency": 337379327
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 342097919,
+          "q2Latency": 343408639
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.916549806,
+      "q1Throughput": 111.36594552881925,
+      "q2Throughput": 111.25379452627261,
+      "q1_90Percentile": 313.786367,
+      "q2_90Percentile": 315.097087
+    },
+    {
+      "benchmarkId": 6991614191361708000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 250085375,
+          "q2Latency": 253362175
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 267517951,
+          "q2Latency": 270794751
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 275513343,
+          "q2Latency": 279183359
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 277348351,
+          "q2Latency": 280231935
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 280231935,
+          "q2Latency": 283901951
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 282329087,
+          "q2Latency": 285474815
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 283377663,
+          "q2Latency": 287309823
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 287309823,
+          "q2Latency": 289144831
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 7.362979577,
+      "q1Throughput": 134.8638807992717,
+      "q2Throughput": 134.72806621639228,
+      "q1_90Percentile": 277.348351,
+      "q2_90Percentile": 280.231935
+    },
+    {
+      "benchmarkId": 1677714474609767400,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 283901951,
+          "q2Latency": 285736959
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 292552703,
+          "q2Latency": 294911999
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 299368447,
+          "q2Latency": 301203455
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 300679167,
+          "q2Latency": 302514175
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 307494911,
+          "q2Latency": 309854207
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 322699263,
+          "q2Latency": 324796415
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 325582847,
+          "q2Latency": 327417855
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 326893567,
+          "q2Latency": 328728575
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.09254977,
+      "q1Throughput": 122.70545479759218,
+      "q2Throughput": 122.58188434965906,
+      "q1_90Percentile": 300.679167,
+      "q2_90Percentile": 302.514175
+    },
+    {
+      "benchmarkId": 5048363660885692000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 295960575,
+          "q2Latency": 297533439
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 310116351,
+          "q2Latency": 312213503
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 316932095,
+          "q2Latency": 318767103
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 317980671,
+          "q2Latency": 320077823
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 324272127,
+          "q2Latency": 326107135
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 341311487,
+          "q2Latency": 343408639
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 354156543,
+          "q2Latency": 356777983
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 357564415,
+          "q2Latency": 359399423
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.502478787,
+      "q1Throughput": 116.78947103264323,
+      "q2Throughput": 116.6718582722881,
+      "q1_90Percentile": 317.980671,
+      "q2_90Percentile": 320.077823
+    },
+    {
+      "benchmarkId": 8175656739052707000,
+      "percentileResults": [
+        {
+          "percentile": 50,
+          "q1Latency": 304087039,
+          "q2Latency": 305659903
+        },
+        {
+          "percentile": 75,
+          "q1Latency": 316932095,
+          "q2Latency": 318767103
+        },
+        {
+          "percentile": 87.5,
+          "q1Latency": 325844991,
+          "q2Latency": 327417855
+        },
+        {
+          "percentile": 90,
+          "q1Latency": 327679999,
+          "q2Latency": 329252863
+        },
+        {
+          "percentile": 95,
+          "q1Latency": 330825727,
+          "q2Latency": 332398591
+        },
+        {
+          "percentile": 97.5,
+          "q1Latency": 333447167,
+          "q2Latency": 335020031
+        },
+        {
+          "percentile": 99,
+          "q1Latency": 335806463,
+          "q2Latency": 337379327
+        },
+        {
+          "percentile": 99.9,
+          "q1Latency": 337641471,
+          "q2Latency": 340000767
+        }
+      ],
+      "q1_count": 993,
+      "q2_count": 992,
+      "seconds": 8.73942894,
+      "q1Throughput": 113.62298461574309,
+      "q2Throughput": 113.50856066346138,
+      "q1_90Percentile": 327.679999,
+      "q2_90Percentile": 329.252863
+    }
+  ]
