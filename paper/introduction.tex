@@ -1,9 +1,9 @@
 
 \section{Introduction}
-The algorithmic trading of stock shares can be triggered by very complex patterns that stock market 
-brokers specify based on patterns on event stream of stock market. Such algorithmic trading mostly are specified based on 
-history of event stream and by utilizing moving averages of stock prices and trading volumes. The real-time extraction of 
-such patterns to trigger buy or sell trading decisions is the task of high-scalable event stream processing systems. 
+The algorithmic trading of stock shares can be triggered by high complex event patterns that are specified based on 
+patterns on the event stream of the stock market. Such algorithmic trading mostly are specified based on the 
+history of the event stream, for example by utilizing moving averages of stock prices and the trading volumes. The real-time extraction of 
+such complex patterns to trigger buy or sell trading actions is the task of high-performance event stream processing systems. 
 
 % Describe briefly what the challenge is 
 This year's DEBS Grand Challenge \cite{debs2022challenge} describes a system implementation based on two specific queries 
@@ -42,8 +42,6 @@ and $EMA_{100}$ for a smoothing factor of 100.
 \end{figure*}
 
 
-
-
 % Describe the query 1 and 2 
 Figure \ref{fig:stock} illustrates an example of stock market price changes over time. The graph shows 1000 events with 
 different prices. Figure \ref{fig:EMA200} depicts the values of exponential moving average with 
@@ -73,10 +71,11 @@ Apache Flink streaming \cite{alexandrov2014stratosphere} are developed to achiev
 Also, different benchmarks are developed \cite{DBLP:conf/cloud/SikdarTJ17} \cite{8701904} which compare these systems with each other regarding specific data 
 stream processing tasks. 
 
-After considering all of the existing systems, We decided to implement the DEBS grand challenge from scratch and without using any of the existing systems 
-because most of them have a different target with a large start-up delay which might impact our stream processing performance. The first implementation is a 
-prototype of the system in python because we would like to make sure that we understand the logic of these two queries and can run tests to check if the 
-data streams are processed correctly, and the correct trading advices are submitted to the DEBS2022 evaluation system. 
+After considering all of the existing systems and their overhead trade-offs, we decided to implement the DEBS grand challenge from scratch and 
+without using any of the existing systems because most of them have a different target with a large start-up delay which might impact 
+our stream processing performance. The first implementation is a prototype of the system in python because we would like to make sure 
+that we understand the logic of these two queries and can run tests to check if the data streams are processed correctly, and the correct 
+trading advices are submitted to the DEBS2022 evaluation system. 
 
 
 % High-Performance computing problems 
