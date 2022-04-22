@@ -5,6 +5,8 @@ from queue import Queue
 import messages.challenger_pb2 as ch
 import threading
 import argparse
+import logging
+
 
 def get_crossover(
         ema_38: float,
@@ -181,11 +183,13 @@ def batch_processor(benchmark: Benchmark, queue: Queue):
     
     batch_num = 0
     
+    logger = logging.getLogger(__name__)
+    
     while True:
         
         # Pop off queue (single batch at a time).
         list_of_events, lookup_symbols, seq_id, start_time = queue.get(block=True)
-        print(batch_num)
+        logger.info(f"Processing batch {seq_id}")
         batch_num += 1
 
         
@@ -328,7 +332,9 @@ class ProcessBatches (threading.Thread):
 
 
 def main():
-    
+
+    Log_Format = "%(levelname)s %(asctime)s - %(message)s"
+
     # Argument parsing.
     parser = argparse.ArgumentParser(description='DEBS implementation.')
     parser.add_argument('--num_consumers', type=int, default=4, help='Number of consumers.')
@@ -342,7 +348,16 @@ def main():
     PRODUCERS = args.num_producers
     QUEUE_SIZE = args.queue_size
 
-    print('Starting DEBS with {} consumers and {} producers.'.format(CONSUMERS, PRODUCERS))
+    logging.basicConfig(
+        filename = f'{args.name}.log',
+        filemode = "w",
+        format = Log_Format, 
+        level = logging.INFO
+    )
+
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"Starting {PRODUCERS} producers and {CONSUMERS} consumers.")
 
     benchmark = Benchmark(
         token="zqultcyalnowfgxjlzlsztkcquycninr",
