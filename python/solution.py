@@ -334,6 +334,7 @@ def main():
     parser.add_argument('--num_consumers', type=int, default=4, help='Number of consumers.')
     parser.add_argument('--num_producers', type=int, default=4, help='Number of producers.')
     parser.add_argument('--queue_size', type=int, default=30, help='Queue size for batches.')
+    parser.add_argument('--name', type=str, default='DEBS', help='Name of benchmark.')
     
     args = parser.parse_args()
     
@@ -341,12 +342,14 @@ def main():
     PRODUCERS = args.num_producers
     QUEUE_SIZE = args.queue_size
 
+    print('Starting DEBS with {} consumers and {} producers.'.format(CONSUMERS, PRODUCERS))
+
     benchmark = Benchmark(
         token="zqultcyalnowfgxjlzlsztkcquycninr",
-        benchmark_name="benchmark",
+        benchmark_name=args.name,
         benchmark_type="test",
     )
-    
+
     queue = Queue(maxsize=QUEUE_SIZE)
 
     consumer_main = threading.Thread(target=batch_processor, daemon=True, args=(benchmark, queue))
