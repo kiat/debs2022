@@ -61,8 +61,20 @@ to this task in an integrated form with reading from the queue.
     \end{center}
 \end{figure*}
 
+Figure \ref{fig:Sequential-batch-distributions} illustrates how a sequential data stream processing can work to process the batches in multiple 
+serial event consumers (processing units). Each processing unit will pick up and process a subset of stock market events. 
+In a single machine setup the overhead of passing the event batches to the next consumer is very small but in a distributed setting the 
+overhead of passing data batches to the next consumer over the network is very high because of data serialization costs. Comparing the 
+architecture of Figure \ref{fig:Sequential-batch-distributions} and \ref{fig:parallel-srream-processing}, we preferred to implement the system 
+parallel format shown in Figure \ref{fig:parallel-srream-processing}. 
 
-
+\begin{figure*}[]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{./images/Stream-Batch-Distributions_op2}
+        \caption{A Sequential Processing Pipeline. Each consumer reads a batch and passes to the next consumer. }
+        \label{fig:Sequential-batch-distributions}
+    \end{center}
+\end{figure*}
 
 The stream processing system will terminate if the stream of data is terminated, producers can not generate more event batches 
 and there is no event batch in the buffer queue. 
@@ -84,7 +96,7 @@ that we understand the challenge tasks and be able to process the queries in cor
 
 We realized that the processing task of the query 2 is a very simple computation that can be integrated with the query 1 task. 
 The listing \ref{lst:query2} provides a simple python function that we use to check if we have match for a breakout pattern. 
-
+This code can detect the breakouts (Crossover points) shown in Figure \ref{fig:query2_example}.
 % Discuss the details of implementation. 
 % Add code how we do the Query 2. 
 
@@ -177,12 +189,21 @@ return None
 % \end{lstlisting}
 % \end{minipage}
     
-\textbf{Cluster Implementation.}\\
+\textbf{Distributed Cluster Implementation.}\\
 The architecture on Figure \ref{fig:parallel-srream-processing} can be implemented in on a cluster of machines.
 The cache to store the stream batches can be implemented using a shared memory on a single machine or using a service bus
 like Apache Kafka\footnote{\url{https://kafka.apache.org/}} or Apache Camel \footnote{\url{https://camel.apache.org/}} to store 
 the events and let multiple consumer clients access the streaming data batches.  
 
-One other implementation detail is to use high-efficient data model and serialization framework when for the data transmission between 
-the processing nodes in serialized format. Studies have shown that choosing the correct data model and serialization 
- have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
+Each consumer can subscribe to the event bus (e.g., Kafka) and receive only those stock prices that the specific consumer is responsible 
+for them. In this way, there will no dependencies between the consumers and there is no need to pass over the data batches to the next 
+consumer, also each consumer can submit the query result to the output sink.  
+
+One other implementation detail is to use high-efficient data model and serialization framework for the data transmission between 
+the processing nodes. Studies have shown that choosing the correct data model and serialization  have a huge impact on data 
+processing performance \cite{DBLP:conf/cloud/SikdarTJ17}. 
+
+We would recommend to implement the proposed architectural solution in a system programming language like C++ or Rust because of the static 
+typed variables and manually managed memory without an overhead of automated garbage collection. 
+
+
