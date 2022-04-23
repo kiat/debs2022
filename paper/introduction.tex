@@ -1,14 +1,16 @@
 
 \section{Introduction}
-The algorithmic trading of stock shares can be triggered by high complex event patterns that are specified based on 
-patterns on the event stream of the stock market. Such algorithmic trading mostly are specified based on the 
-history of the event stream, for example by utilizing moving averages of stock prices and the trading volumes. The real-time extraction of 
-such complex patterns to trigger buy or sell trading actions is the task of high-performance event stream processing systems. 
+The algorithmic trading of stock shares can be triggered by high complex event patterns that are specified 
+based on patterns in the event stream of the stock market. Such algorithmic trading mostly is specified 
+based on the history of the event stream, for example, by utilizing moving averages of stock prices and the trading volumes. 
+The real-time extraction of such complex patterns to trigger buy or sell trading actions is the task 
+of high-performance event stream processing systems. 
 
 % Describe briefly what the challenge is 
-This year's DEBS Grand Challenge \cite{debs2022challenge} describes a system implementation based on two specific queries 
-stock market event streams. The first query computes is defined to compute the Exponential Moving Average (EMA) with two different smoothing factors 
-of 38 and 100. Exponential Moving Average is one of the moving averages and is defined as follows:
+This year's DEBS Grand Challenge \cite{debs2022challenge} describes a system implementation based on two specific queries on the 
+stock market event streams. The first query is defined to compute the Exponential Moving Average (EMA) with two 
+different smoothing factors of 38 and 100. 
+An exponential Moving Average is one of the moving averages and is defined as follows:
 
 \begin{align*}
     EMA_t = \begin{cases} 
@@ -19,7 +21,7 @@ of 38 and 100. Exponential Moving Average is one of the moving averages and is d
 
 The coefficient $\alpha$ represents the degree of weighting decrease, a constant smoothing factor between 0 and 1.
 For this challenge $\alpha = \frac{2}{1+j}$ where $j$ is a smoothing factor with $j \in \{38, 100 \}$.
-We use $EMA_{38}$ to refer to exponential moving average with smoothing factor of 38 
+We use $EMA_{38}$ to refer to the exponential moving average with a smoothing factor of 38 
 and $EMA_{100}$ for a smoothing factor of 100. 
 
 
@@ -44,25 +46,24 @@ and $EMA_{100}$ for a smoothing factor of 100.
 
 % Describe the query 1 and 2 
 Figure \ref{fig:stock} illustrates an example of stock market price changes over time. The graph shows 1000 events with 
-different prices. Figure \ref{fig:EMA200} depicts the values of exponential moving average with 
+different prices. Figure \ref{fig:EMA200} depicts the values of the exponential moving average with 
 smoothing factors of 38 and 100. We can observe in Figure \ref{fig:EMA200} how the value grows exponentially 
 and how the two $EMA_{38}$ and $EMA_{100}$ are different from each other. 
 
-The query 2 of the DEBS2022 challenge \cite{debs2022challenge} is specified based on the results of query 1. Each time 
+Query 2 of the DEBS2022 challenge \cite{debs2022challenge} is specified based on the results of query 1. Each time 
 that $EMA_{38}$ breaks out of the value of $EMA_{100}$ a stock buy advice notification should be generated and if
-$EMA_{100}$ goes under the $EMA_{38}$ a stock sell advice. For further detail description of the DEBS 2022 
-grand challenge, we would refer the readers to \cite{debs2022challenge}. 
+$EMA_{100}$ goes under the $EMA_{38}$ a stock sell advice. For a further detailed description of the DEBS 2022 
+Grand Challenge, we would refer the readers to \cite{debs2022challenge}. 
 
-This is visualized in Figure \ref{fig:EMAs} which the same graph as we have in Figure \label{fig:EMAs} by 
-zooming into the graph to see the values and their differentiations. One important observation in 
+Figure \ref{fig:EMAs} visualize the same graph as we have in Figure \label{fig:EMAs} by 
+zooming into the graph (range 0 to 200 events on x-axis) to see the values and their differentiations. One important observation in 
 Figure \ref{fig:EMA200,fig:EMAs} is that $EMA_{38}$ and $EMA_{100}$ have a large difference in the first 
 200 events.  The reason for this difference is that the exponential moving average is specified based 
 on the history of events to increase the value exponentially and requires a warm-up phase. Based on this observation,
 one can improve the performance of the query 2 by skipping the first 200 events for query 2 because 
 $EMA_{38}$ and $EMA_{100}$ have still a large difference. 
 
-
-The main challenge task was to process the stream of events and achieve high throughput and low latency. 
+The main system development challenge task is to design a system that can process the stream of events with high throughput and low latency. 
 Many open source and commercial stream processing systems are developed that one can use to develop this challenge. 
 Esper event stream processing system \cite{Bernhardt2007} is a system that can detect complex events based on pre-defined temporal logic patterns. 
 In this task we do not have a complex pattern to extract and computation are basic computation of EMA 38 and 100, and a subsequent check if the values for 
