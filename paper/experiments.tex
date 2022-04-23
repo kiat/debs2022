@@ -14,15 +14,16 @@ By using vectorized bulk operations we can avoid the linear time of iterations o
 vectorization within each of our multi-threaded consumers. 
 
 % Experiments with different number of event producer threads and consumer threads. 
-We have experimented with different number of producers and consumers. Figure \ref{} depicts our query 2 throughputresults for different number of 
-producers and consumers. This results are produced by using the benchmark system provided by the DEBS 2022 grand challenge. 
+We have experimented with different number of producers and consumers. 
+Figure \ref{} depicts query 2 throughput results for different number of producers and consumers. 
+This results are produced by using the benchmark system provided by the DEBS 2022 grand challenge. 
 
 
 \begin{figure}[]
     \begin{center}
-        \includegraphics[width=0.45\textwidth]{./images/Stream-Batch-Distributions}
-        \caption{Query 2 throughput for different number of Producers and Consumers. (Batch Size 1000)}
-        \label{fig:batch-distributions}
+        \includegraphics[width=0.5\textwidth]{./images/throughput.png}
+        \caption{Query 2 throughput for different number of Producers. (Batch Size 1k)}
+        \label{fig:evaluation}
     \end{center}
 \end{figure}
 
