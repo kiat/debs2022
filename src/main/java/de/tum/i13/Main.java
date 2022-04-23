@@ -1,17 +1,23 @@
 package de.tum.i13;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.tum.i13.Cloud.MultiClient;
-import de.tum.i13.challenge.*;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import de.tum.i13.Cloud.MultiClient;
+import de.tum.i13.challenge.Batch;
+import de.tum.i13.challenge.Benchmark;
+import de.tum.i13.challenge.BenchmarkConfiguration;
+import de.tum.i13.challenge.ChallengerGrpc;
+import de.tum.i13.challenge.CrossoverEvent;
+import de.tum.i13.challenge.Indicator;
+import de.tum.i13.challenge.Query;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 
 public class Main {
     private static final Logger log = LogManager.getLogger(Main.class);
@@ -58,7 +64,7 @@ public class Main {
                 batch = challengeClient.nextBatch(newBenchmark);
             }
 
-            workerClient.submitMiniBatch(batch, newBenchmark, challengeClient);
+//            workerClient.submitMiniBatch(batch, newBenchmark, challengeClient);
 
 
             log.info(String.format("processed batch %d with %d events", batch.getSeqId(), batch.getEventsList().size()));
@@ -70,7 +76,9 @@ public class Main {
         }
 
         workerClient.awaitTermination();
+        
         challengeClient.endBenchmark(newBenchmark);
+        
         log.info("finished benchmark");
     }
 

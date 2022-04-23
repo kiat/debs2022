@@ -1,16 +1,24 @@
 package de.tum.i13.Cloud;
 
-import de.tum.i13.challenge.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.Executor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import de.tum.i13.challenge.Batch;
+import de.tum.i13.challenge.Benchmark;
+import de.tum.i13.challenge.ChallengerGrpc;
+import de.tum.i13.challenge.Event;
+import de.tum.i13.challenge.ResultQ1;
+import de.tum.i13.challenge.ResultQ2;
+import de.tum.i13.challenge.ResultRequest;
+import de.tum.i13.challenge.ResultResponse;
 
 
 public class MultiClient {
