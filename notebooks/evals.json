@@ -1,6 +1,8 @@
 [
     {
       "benchmarkId": 6445237014050734000,
+      "producers": 1,
+      "consumers": 4,
       "percentileResults": [
         {
           "percentile": 50,
@@ -53,6 +55,8 @@
     },
     {
       "benchmarkId": 6228436344855340000,
+      "producers": 1,
+      "consumers": 8,
       "percentileResults": [
         {
           "percentile": 50,
@@ -105,6 +109,8 @@
     },
     {
       "benchmarkId": 1619572463597370600,
+      "producers": 1,
+      "consumers": 12,
       "percentileResults": [
         {
           "percentile": 50,
@@ -157,6 +163,8 @@
     },
     {
       "benchmarkId": 3341907533043770400,
+      "producers": 1,
+      "consumers": 16,
       "percentileResults": [
         {
           "percentile": 50,
@@ -209,6 +217,8 @@
     },
     {
       "benchmarkId": 3592461873604799500,
+      "producers": 2,
+      "consumers": 4,
       "percentileResults": [
         {
           "percentile": 50,
@@ -261,6 +271,8 @@
     },
     {
       "benchmarkId": 7029810913233256000,
+      "producers": 2,
+      "consumers": 8,
       "percentileResults": [
         {
           "percentile": 50,
@@ -313,6 +325,8 @@
     },
     {
       "benchmarkId": 9041807848630979000,
+      "producers": 2,
+      "consumers": 12,
       "percentileResults": [
         {
           "percentile": 50,
@@ -365,6 +379,8 @@
     },
     {
       "benchmarkId": 4568889030920979000,
+      "producers": 2,
+      "consumers": 16,
       "percentileResults": [
         {
           "percentile": 50,
@@ -417,6 +433,8 @@
     },
     {
       "benchmarkId": 6991614191361708000,
+      "producers": 4,
+      "consumers": 4,
       "percentileResults": [
         {
           "percentile": 50,
@@ -469,6 +487,8 @@
     },
     {
       "benchmarkId": 1677714474609767400,
+      "producers": 4,
+      "consumers": 8,
       "percentileResults": [
         {
           "percentile": 50,
@@ -521,6 +541,8 @@
     },
     {
       "benchmarkId": 5048363660885692000,
+      "producers": 4,
+      "consumers": 12,
       "percentileResults": [
         {
           "percentile": 50,
@@ -573,6 +595,8 @@
     },
     {
       "benchmarkId": 8175656739052707000,
+      "producers": 4,
+      "consumers": 16,
       "percentileResults": [
         {
           "percentile": 50,
