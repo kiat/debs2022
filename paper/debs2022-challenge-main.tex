@@ -61,29 +61,14 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 %% of the event, and this ID should be used as the parameter to this command.
 %%\acmSubmissionID{123-A56-BU3}
 
-%%
-%% The majority of ACM publications use numbered citations and
-%% references.  The command \citestyle{authoryear} switches to the
-%% "author year" style.
-%%
-%% If you are preparing content for an event
-%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
-%% citations and references.
-%% Uncommenting
-%% the next command will enable that style.
-%%\citestyle{acmauthoryear}
 
-%%
-%% end of the preamble, start of the body of the document source.
 \begin{document}
 
-%%
-%% The "title" command has an optional parameter,
-%% allowing the author to define a "short title" to be used in page headers.
 \title{A High-Performance Stream Processing System Implementation for Monitoring Stock Market Data Stream}
 
 
 \author{Kevin Li, Daniel Fernandez, David Klingler, Yuhan Gao, Jacob Rivera, Kia Teymourian}
+
 \affiliation{
   \institution{The University of Texas at Austin}
   \city{Austin, TX}
@@ -93,8 +78,7 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 
 \begin{abstract}
 High-performance real-time monitoring of the stock market data stream is one of the challenging use cases of 
-stream processing systems. Market brokers specify various trading strategies based on a set of specific patterns on stock price 
-history.  
+stream processing systems. Algorithmic trading are triggered based on high-throughput event stream processing on stock market price real-time stream. 
 In this paper, we describe our implementation of a system for the DEBS2022 Grand Challenge to extract 
 breakout patterns from real-time stock market data.  Breakout patterns are specified based on long intervals of 
 50 days and 100 days known as the golden cross to indicate a golden opportunity for long-term investments. 
@@ -163,11 +147,10 @@ trading advice notification output stream.
 
 \section{Conclusion}\label{sec:conclustion}
 In this paper, we described our different architecture for a stock market data stream processing to implement the 
-DEBS 2022 grand challenge. Our implementation and evaluation are clearly limited due to the time constrains that we had 
+DEBS 2022 grand challenge. Our implementation and evaluation are clearly limited due to the time constrains we had 
 for this work. One potential improvement would be to implement it using a system programming language. Also, it would be 
 interesting to evaluate how a from-scratch-implemented system would perform in this case compared to some of large-scale 
 cluster-based stream processing systems like Apache Storm or Flink.
-
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
