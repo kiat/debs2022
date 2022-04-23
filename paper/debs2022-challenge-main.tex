@@ -77,13 +77,13 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 
 
 \begin{abstract}
-High-performance real-time monitoring of the stock market data stream is one of the challenging use cases of 
-stream processing systems. Algorithmic trading are triggered based on high-throughput event stream processing on stock market price real-time stream. 
-In this paper, we describe our implementation of a system for the DEBS2022 Grand Challenge to extract 
-breakout patterns from real-time stock market data.  Breakout patterns are specified based on long intervals of 
-50 days and 100 days known as the golden cross to indicate a golden opportunity for long-term investments. 
-We report details of our high-performance implementation to extract such patterns from real-time stream to generate stock 
-trading advice notification output stream.
+  High-performance real-time monitoring of the stock market data stream is one of the challenging use cases of 
+  stream processing systems. Algorithmic trading is triggered based on high-throughput event stream processing on stock market price real-time stream. 
+  In this paper, we describe our implementation of a system for the DEBS2022 Grand Challenge to extract 
+  breakout patterns from real-time stock market data.  Breakout patterns are specified based on long intervals of 
+  50 days and 100 days are known as the golden cross to indicate a golden opportunity for long-term investments. 
+  We report details of our high-performance implementation to extract such patterns from a real-time stream to generate a stock 
+  trading advice notification output stream.
 \end{abstract}
 
 %%
@@ -146,11 +146,11 @@ trading advice notification output stream.
 \input{experiments}
 
 \section{Conclusion}\label{sec:conclustion}
-In this paper, we described our different architecture for a stock market data stream processing to implement the 
-DEBS 2022 grand challenge. Our implementation and evaluation are clearly limited due to the time constrains we had 
-for this work. One potential improvement would be to implement it using a system programming language. Also, it would be 
-interesting to evaluate how a from-scratch-implemented system would perform in this case compared to some of large-scale 
-cluster-based stream processing systems like Apache Storm or Flink.
+In this paper, we described our different architectures for a stock market data stream processing to implement the DEBS 2022 grand challenge. Our implementation and evaluation are limited due to the time constraints we had for this work. One potential improvement would be to implement it using a system programming language. Also, it would be interesting to evaluate how a from-scratch-implemented system would perform in this case compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink. 
+
+\section{Acknowledgment}
+We would like to thank the organizers of the DEBS 2022 Grand Challenge for developing this implementation challenge. 
+
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{references}
