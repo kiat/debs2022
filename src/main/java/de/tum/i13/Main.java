@@ -13,55 +13,50 @@ import io.grpc.ManagedChannelBuilder;
 
 public class Main {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress("challenge.msrg.in.tum.de", 5023)
-                //.forAddress("192.168.1.4", 5023) //in case it is used internally
-                .usePlaintext()
-                .build();
+		ManagedChannel channel = ManagedChannelBuilder
+				.forAddress("challenge.msrg.in.tum.de", 5023)
+				// .forAddress("192.168.1.4", 5023) //in case it is used internally
+				.usePlaintext().build();
 
+		var challengeClient = ChallengerGrpc.newBlockingStub(channel) // for demo, we show the blocking stub
+				.withMaxInboundMessageSize(100 * 1024 * 1024)
+				.withMaxOutboundMessageSize(100 * 1024 * 1024);
 
-        var challengeClient = ChallengerGrpc.newBlockingStub(channel) //for demo, we show the blocking stub
-                .withMaxInboundMessageSize(100 * 1024 * 1024)
-                .withMaxOutboundMessageSize(100 * 1024 * 1024);
+		BenchmarkConfiguration bc = BenchmarkConfiguration.newBuilder()
+				.setBenchmarkName("Java Test Run on " + new Date().toString())
+				.addQueries(Query.Q1)
+				.addQueries(Query.Q2)
+				.setToken("zqultcyalnowfgxjlzlsztkcquycninr") // go to: https://challenge.msrg.in.tum.de/profile/
+				// .setBenchmarkType("Evaluation") //Benchmark Type for evaluation
+				.setBenchmarkType("Test") // Benchmark Type for testing
+				.build();
 
-        BenchmarkConfiguration bc = BenchmarkConfiguration.newBuilder()
-                .setBenchmarkName("Testrun " + new Date().toString())
-                .addQueries(Query.Q1)
-                .addQueries(Query.Q2)
-                .setToken("zqultcyalnowfgxjlzlsztkcquycninr") //go to: https://challenge.msrg.in.tum.de/profile/
-                //.setBenchmarkType("evaluation") //Benchmark Type for evaluation
-                .setBenchmarkType("test") //Benchmark Type for testing
-                .build();
+		// Create a new Benchmark
+		Benchmark newBenchmark = challengeClient.createNewBenchmark(bc);
 
-        //Create a new Benchmark
-        Benchmark newBenchmark = challengeClient.createNewBenchmark(bc);
-        
+		// Start the benchmark
+		challengeClient.startBenchmark(newBenchmark);
 
-        //Start the benchmark
-        challengeClient.startBenchmark(newBenchmark);
+		// Process the events
+		int cnt = 0;
 
-        //Process the events
-        int cnt = 0;
-        
-        // Create a Consumer
-        
-        Consumer m_consumer= new Consumer(); 
-        
-        
-        while(true) {
-        	
-            Batch batch = challengeClient.nextBatch(newBenchmark);
-            
-            if (batch.getLast()) { //Stop when we get the last batch
-                System.out.println("Received lastbatch, finished!");
-                break;
-            }
+		// Create a Consumer
 
-            m_consumer.processQuery1(batch, newBenchmark, challengeClient);
-            
-            
+//        Consumer m_consumer= new Consumer(); 
+
+		while (true) {
+
+			Batch batch = challengeClient.nextBatch(newBenchmark);
+
+			if (batch.getLast()) { // Stop when we get the last batch
+				System.out.println("Received lastbatch, finished!");
+				break;
+			}
+
+//            m_consumer.processQuery1(batch, newBenchmark, challengeClient);
+
 //            //process the batch of events we have
 //            var q1Results = calculateIndicators(batch);
 //
@@ -84,25 +79,21 @@ public class Main {
 //                    .build();
 //
 //            challengeClient.resultQ2(q2Result);
-            
-            
 //            
-            
-            cnt++;
-            System.out.println(cnt);
-           
+
+			cnt++;
+			System.out.println(cnt);
 
 //            if(cnt > 100) { //for testing you can stop early, in an evaluation run, run until getLast() is True.
 //                break;
 //            }
 
-        }
+		}
 
-        challengeClient.endBenchmark(newBenchmark);
-        System.out.println("ended Benchmark");
-    }
-    
-    
+		challengeClient.endBenchmark(newBenchmark);
+		System.out.println("ended Benchmark");
+
+	}
 
 //    private static List<Indicator> calculateIndicators(Batch batch) {
 //        //TODO: improve implementation
@@ -116,6 +107,5 @@ public class Main {
 //        return new ArrayList<>();
 //    }
 //    
-    
-    
+
 }
