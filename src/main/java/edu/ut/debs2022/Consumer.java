@@ -23,7 +23,8 @@ public class Consumer extends Thread {
 	public Consumer(Benchmark benchmark, ChallengerBlockingStub challengeClient) {
 		this.benchmark = benchmark;
 		this.challengeClient = challengeClient;
-		this.emaDict = new HashMap<String, EMAs>(10000);
+		
+		this.emaDict = new HashMap<String, EMAs>(Constants.DICT_INIT_SIZE);
 	}
 
 	public void run() {
@@ -46,13 +47,18 @@ public class Consumer extends Thread {
 
 				TupleListResult results = calculateIndicators(batch);
 
-				ResultQ1 q1Result = ResultQ1.newBuilder().setBenchmarkId(this.benchmark.getId()) // set the benchmark id
+				ResultQ1 q1Result = ResultQ1.newBuilder()
+						.setBenchmarkId(this.benchmark.getId()) // set the benchmark id
 						.setBatchSeqId(batch.getSeqId()) // set the sequence number
-						.addAllIndicators(results.getIndicatorList()).build();
+						.addAllIndicators(results.getIndicatorList())
+						.build();
 
-				ResultQ2 q2Result = ResultQ2.newBuilder().setBenchmarkId(this.benchmark.getId()) // set the benchmark id
+				ResultQ2 q2Result = ResultQ2.newBuilder()
+						.setBenchmarkId(this.benchmark.getId()) // set the benchmark id
 						.setBatchSeqId(batch.getSeqId()) // set the sequence number
-						.addAllCrossoverEvents(results.getCrossoverEventList()).build();
+						.addAllCrossoverEvents(results
+						.getCrossoverEventList())
+						.build();
 
 				// return the result of Q1
 				challengeClient.resultQ1(q1Result);

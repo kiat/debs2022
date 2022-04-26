@@ -2,10 +2,10 @@ package edu.ut.debs2022;
 
 import de.tum.i13.challenge.Batch;
 import de.tum.i13.challenge.Benchmark;
-import de.tum.i13.challenge.BenchmarkConfiguration;
 import de.tum.i13.challenge.ChallengerGrpc.ChallengerBlockingStub;
 
 public class Reader extends Thread {
+	// This thread reads the batches from the API and add them to the Queue Cache. 
 
 	Benchmark benchmark;
 	ChallengerBlockingStub challengeClient;
@@ -27,7 +27,7 @@ public class Reader extends Thread {
 			BatchCacheSingleton.getInstance().addToQueue(batch);
 
 			// !TODO: set the size in a config file.
-			if (BatchCacheSingleton.getInstance().size() > 100) {
+			if (BatchCacheSingleton.getInstance().size() > Constants.BATCH_CACHE_SIZE) {
 
 				try {
 					Thread.sleep(1);
