@@ -33,7 +33,7 @@ public class Reader extends Thread {
 
 				try {
 					Thread.sleep(20);
-					notifyAll();
+//					notifyAll();
 
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block

@@ -38,3 +38,14 @@ python3 solution.py  --num_producers 4 --num_consumers 16 --queue_size 10
 python3 solution.py --help
 ```
 Able to tune the number of producers, consumers, and the queue size for the producers and consumers.
+
+
+
+# Java Implementation 
+
+
+```
+gradle clean build run 
+```
+
+
