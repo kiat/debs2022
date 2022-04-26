@@ -30,7 +30,7 @@ public class Reader extends Thread {
 			if (BatchCacheSingleton.getInstance().size() > 100) {
 
 				try {
-					Thread.sleep(20);
+					Thread.sleep(1);
 //					notifyAll();
 
 				} catch (InterruptedException e) {
