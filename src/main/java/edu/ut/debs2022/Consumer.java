@@ -32,47 +32,44 @@ public class Consumer extends Thread {
 
 		while (true) {
 
-
-			if(BatchCacheSingleton.getInstance().size() == 0) {
+			if (BatchCacheSingleton.getInstance().size() == 0) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
-				
-			
-			}else {
-			
+
+			} else {
+
 				batch = BatchCacheSingleton.getInstance().getNext();
-			if (batch.getLast()) { // Stop when we get the last batch
-				System.out.println("Received lastbatch, finished!");
-				break;
-			}
 
-			TupleListResult results = calculateIndicators(batch);
+				TupleListResult results = calculateIndicators(batch);
 
-			ResultQ1 q1Result = ResultQ1.newBuilder().setBenchmarkId(this.benchmark.getId()) // set the benchmark id
-					.setBatchSeqId(batch.getSeqId()) // set the sequence number
-					.addAllIndicators(results.getIndicatorList()).build();
+				ResultQ1 q1Result = ResultQ1.newBuilder().setBenchmarkId(this.benchmark.getId()) // set the benchmark id
+						.setBatchSeqId(batch.getSeqId()) // set the sequence number
+						.addAllIndicators(results.getIndicatorList()).build();
 
-			ResultQ2 q2Result = ResultQ2.newBuilder().setBenchmarkId(this.benchmark.getId()) // set the benchmark id
-					.setBatchSeqId(batch.getSeqId()) // set the sequence number
-					.addAllCrossoverEvents(results.getCrossoverEventList()).build();
+				ResultQ2 q2Result = ResultQ2.newBuilder().setBenchmarkId(this.benchmark.getId()) // set the benchmark id
+						.setBatchSeqId(batch.getSeqId()) // set the sequence number
+						.addAllCrossoverEvents(results.getCrossoverEventList()).build();
 
-			// return the result of Q1
-			challengeClient.resultQ1(q1Result);
+				// return the result of Q1
+				challengeClient.resultQ1(q1Result);
 
-			challengeClient.resultQ2(q2Result);
-		
+				challengeClient.resultQ2(q2Result);
+
+				if (batch.getLast()) { // Stop when we get the last batch
+					System.out.println("Received lastbatch on the Consumer Side, finished!");
+					break;
+				}
+
 			}
 		}
-		
-		
+
 		challengeClient.endBenchmark(this.benchmark);
 		System.out.println("ended Benchmark");
-		
+
 	}
 
 	/**
@@ -81,9 +78,9 @@ public class Consumer extends Thread {
 	 * @return
 	 */
 	private TupleListResult calculateIndicators(Batch batch) {
-		
+
 //		System.out.println(batch.getSeqId());
-		
+
 		float new_ema38, new_ema100;
 
 		int size = batch.getEventsCount();

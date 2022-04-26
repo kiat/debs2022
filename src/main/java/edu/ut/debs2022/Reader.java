@@ -20,8 +20,6 @@ public class Reader extends Thread {
 
 		long cnt = 0;
 
-
-
 		while (true) {
 
 			Batch batch = this.challengeClient.nextBatch(benchmark);
@@ -43,7 +41,7 @@ public class Reader extends Thread {
 
 			// Stop when we get the last batch
 			if (batch.getLast()) {
-				System.out.println("Received lastbatch, finished!");
+				System.out.println("Received lastbatch on the Reader Side, Wait for the consumer ... ");
 				break;
 			}
 
