@@ -33,8 +33,8 @@ public class Main {
 				.addQueries(Query.Q1)
 				.addQueries(Query.Q2)
 				.setToken("zqultcyalnowfgxjlzlsztkcquycninr") // go to: https://challenge.msrg.in.tum.de/profile/
-//				 .setBenchmarkType("Evaluation") //Benchmark Type for evaluation
-				.setBenchmarkType("Test") // Benchmark Type for testing
+				 .setBenchmarkType("Evaluation") //Benchmark Type for evaluation
+//				.setBenchmarkType("Test") // Benchmark Type for testing
 				.build();
 
 //		 Create a new Benchmark
