@@ -1,4 +1,16 @@
-# Debs2022
+# Java Implementation 
+
+
+```
+gradle clean build run 
+```
+
+Higher performance with Java implementation is achieved. 
+
+
+
+
+# Python Implementation 
 
 ## Running locally
 Change into the `python` directory.
@@ -41,11 +53,5 @@ Able to tune the number of producers, consumers, and the queue size for the prod
 
 
 
-# Java Implementation 
-
-
-```
-gradle clean build run 
-```
 
 
