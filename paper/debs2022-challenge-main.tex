@@ -78,11 +78,11 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 
 \begin{abstract}
   High-performance real-time monitoring of the stock market data stream is one of the challenging use cases of 
-  stream processing systems. Algorithmic trading is triggered based on high-throughput event stream processing on stock market price real-time stream. 
+  stream processing systems. Algorithmic trading is triggered based on high-throughput event stream processing on real-time stock market data. 
   In this paper, we describe our implementation of a system for the DEBS2022 Grand Challenge to extract 
-  breakout patterns from real-time stock market data.  Breakout patterns are specified based on long intervals of 
-  50 days and 100 days are known as the golden cross to indicate a golden opportunity for long-term investments. 
-  We report details of our high-performance implementation to extract such patterns from a real-time stream to generate a stock 
+  breakout patterns from real-time stock market data. Breakout patterns based on exponential moving averages
+  crossover events indicate potential bullish or bearish trends, giving investors the opportunity to buy or sell
+  at optimal times. We report details of our high-performance implementation to extract such patterns from a real-time stream to generate a stock 
   trading advice notification output stream.
 \end{abstract}
 

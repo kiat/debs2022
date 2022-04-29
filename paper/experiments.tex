@@ -1,8 +1,8 @@
 \section{Experiments and Evaluation}\label{sec:experiments}
 % Describe our results based on different number of producer and consumer numbers. 
 We have implemented and evaluated our event processing architecture in Python and Java. We have run multiple experiments  to be 
-able to select the right stream processing architecture for this task. Our experiments includes a set of experiments with different 
-number of event producers and consumers threads, as well as other experiments with different number of threads and queue buffer sizes. 
+able to select the right stream processing architecture for this task. Our experiments include a set of experiments with varying 
+numbers of event producers and consumers threads, as well as other experiments with different number of threads and queue buffer sizes. 
 
 The main computation for query 1 and query 2 is a very small computation to get the last prices from a dictionary of stock symbols and then 
 check the two values of EMA 38 and 38 to find out the breakouts. We have profiled our implement and confirmed that the main implemented system 
@@ -29,5 +29,3 @@ This results are produced by using the benchmark system provided by the DEBS 202
 
 
 %TODO!: Experiment with different architectures if we have any. 
-
-
