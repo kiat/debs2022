@@ -64,7 +64,9 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 
 \begin{document}
 
-\title{A High-Performance Stream Processing System Implementation for Monitoring Stock Market Data Stream}
+% Original Title: \title{A High-Performance Stream Processing System Implementation for Monitoring Stock Market Data Stream}
+
+\title{A High-Performance Processing System for Monitoring Stock Market Data Stream}
 
 
 \author{Kevin Li, Daniel Fernandez, David Klingler, Yuhan Gao, Jacob Rivera, Kia Teymourian}
@@ -77,12 +79,12 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 
 
 \begin{abstract}
-  High-performance real-time monitoring of the stock market data stream is one of the challenging use cases of 
-  stream processing systems. Algorithmic trading is triggered based on high-throughput event stream processing on real-time stock market data. 
-  In this paper, we describe our implementation of a system for the DEBS2022 Grand Challenge to extract 
+  High-performance real-time monitoring of the stock market data stream is one of the challenging use cases of
+  stream processing systems. Algorithmic trading is triggered based on high-throughput event stream processing on real-time stock market data.
+  In this paper, we describe our implementation of a system for the DEBS2022 Grand Challenge to extract
   breakout patterns from real-time stock market data. Breakout patterns based on exponential moving averages
   crossover events indicate potential bullish or bearish trends, giving investors the opportunity to buy or sell
-  at optimal times. We report details of our high-performance implementation to extract such patterns from a real-time stream to generate a stock 
+  at optimal times. We report details of our high-performance implementation to extract such patterns from a real-time stream to generate a stock
   trading advice notification output stream.
 \end{abstract}
 
@@ -146,10 +148,10 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 \input{experiments}
 
 \section{Conclusion}\label{sec:conclustion}
-In this paper, we described our different architectures for a stock market data stream processing to implement the DEBS 2022 grand challenge. Our implementation and evaluation are limited due to the time constraints we had for this work. One potential improvement would be to implement it using a system programming language. Also, it would be interesting to evaluate how a from-scratch-implemented system would perform in this case compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink. 
+In this paper, we described our different architectures for a stock market data stream processing to implement the DEBS 2022 grand challenge. Our implementation and evaluation are limited due to the time constraints we had for this work. One potential improvement would be to implement it using a system programming language. Also, it would be interesting to evaluate how a from-scratch-implemented system would perform in this case compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink.
 
 \section{Acknowledgment}
-We would like to thank the organizers of the DEBS 2022 Grand Challenge for developing this implementation challenge. 
+We would like to thank the organizers of the DEBS 2022 Grand Challenge for developing this implementation challenge.
 
 
 \bibliographystyle{ACM-Reference-Format}
