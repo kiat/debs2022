@@ -2,6 +2,7 @@ package edu.ut.debs2022;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ import de.tum.i13.challenge.ResultQ2;
 
 public class Consumer extends Thread {
 
-	Map<String, EMAs> emaDict;
+	Map<String, Tracker> trackerDict;
 	Benchmark benchmark;
 	ChallengerBlockingStub challengeClient;
 
@@ -24,7 +25,7 @@ public class Consumer extends Thread {
 		this.benchmark = benchmark;
 		this.challengeClient = challengeClient;
 		
-		this.emaDict = new HashMap<String, EMAs>(Constants.DICT_INIT_SIZE);
+		this.trackerDict = new HashMap<String, Tracker>(Constants.DICT_INIT_SIZE);
 	}
 
 	public void run() {
@@ -85,8 +86,6 @@ public class Consumer extends Thread {
 	 */
 	private TupleListResult calculateIndicators(Batch batch) {
 
-//		System.out.println(batch.getSeqId());
-
 		float new_ema38, new_ema100;
 
 		int size = batch.getEventsCount();
@@ -97,51 +96,41 @@ public class Consumer extends Thread {
 
 		List<Event> events = batch.getEventsList();
 
-		for (Event event : events) {
+		long startTime = -1;
 
-			float price = event.getLastTradePrice();
-			String symbol = event.getSymbol();
+		for (int i = 0; i < events.size(); i++) {
 
-			Object m_object = emaDict.get(symbol);
-			EMAs emas = (EMAs) m_object;
-
-			if (emas != null) {
-
-				// we have already this symbol in Cache.
-
-				float ema38_pre = emas.getEma38();
-				float ema100_pre = emas.getEma100();
-
-				new_ema38 = (price * (2 / (1 + 38))) + ema38_pre * (1 - 2 / (1 + 38));
-				new_ema100 = (price * (2 / (1 + 100))) + ema100_pre * (1 - 2 / (1 + 100));
-
-				// put back the updated values
-				emas.setEma100(new_ema100);
-				emas.setEma38(new_ema38);
-				emaDict.put(symbol, emas);
-
-				// Now we check for Query 2 here
-
-				CrossoverEvent crossoverEvent = crossoverEvent(event, ema38_pre, ema100_pre, new_ema38, new_ema100);
-				if (crossoverEvent != null) {
-					crossoverEventsList.add(crossoverEvent);
-
-				}
-
-			} else {
-				// We see this symbol for the first time
-				new_ema38 = (price * (2 / (1 + 38)));
-				new_ema100 = (price * (2 / (1 + 100)));
-
-				EMAs n_emas = new EMAs(new_ema38, new_ema100);
-				emaDict.put(symbol, n_emas);
+			Event e = events.get(i);
+			
+			// First event, set start time.
+			if (i == 0) {
+				startTime = e.getLastTrade().getSeconds();
 			}
 
-			// Build the indicator and add them to the ArrayList.
-			Indicator indicator = Indicator.newBuilder().setEma100(new_ema100).setEma38(new_ema38).build();
+			if (!trackerDict.containsKey(e.getSymbol())) {
+				Tracker t = new Tracker(e.getSymbol(), startTime);
+			}
+
+			Tracker t = trackerDict.get(e.getSymbol());
+
+			t.evalEvent(e);
+
+		}
+
+		// Go through all the trackers and add everything.
+		for (Tracker t: trackerDict.values()) {
+
+			// Adding indicators.
+			float ema38 = t.getEma38();
+			float ema100 = t.getEma100();
+			Indicator indicator = Indicator.newBuilder().setEma100(ema100).setEma38(ema38).build();
 
 			indicatorsList.add(indicator);
 
+
+			// Adding crossovers.
+			List<CrossoverEvent> crossovers = t.getCrossoverEvents();
+			crossoverEventsList.addAll(crossovers);
 		}
 
 		// create a new tuple result for both queries and return.
@@ -150,35 +139,94 @@ public class Consumer extends Thread {
 		return tupleListResult;
 	}
 
-//	
-//	if ema_38 <= ema_100 and cur_38 > cur_100:
-//        type = ch.CrossoverEvent.SignalType.Buy
-//    elif ema_38 >= ema_100 and cur_38 < cur_100:
-//        type = ch.CrossoverEvent.SignalType.Sell
-//
-//    if type is not None and e is not None:
-//        return ch.CrossoverEvent(
-//                ts=e.last_trade,
-//                symbol=e.symbol,
-//                security_type=e.security_type,
-//                signal_type=type
-//            )
 
-	public CrossoverEvent crossoverEvent(Event event, float pastEMA38, float pastEMA100, float currEMA38,
-			float currEMA100) {
+	private class Tracker {
 
-		CrossoverEvent crossoverEvent = null;
+		private String symbol;
+		private long startTime;
+		private float prevEma38;
+		private float prevEma100;
+		private Event latestEvent;
+		private List<CrossoverEvent> crossoverEvents;
 
-		if (pastEMA38 <= pastEMA100 && currEMA38 > currEMA100) {
-			crossoverEvent = CrossoverEvent.newBuilder().setSymbol(event.getSymbol())
-					.setSignalType(CrossoverEvent.SignalType.Buy).build();
 
-		} else if (pastEMA38 >= pastEMA100 && currEMA38 < currEMA100) {
-			crossoverEvent = CrossoverEvent.newBuilder().setSymbol(event.getSymbol())
-					.setSignalType(CrossoverEvent.SignalType.Sell).build();
+		public Tracker(String symbol, long reference) {
+			this.symbol = symbol;
+			this.startTime = reference;
+			this.prevEma38 = 0;
+			this.prevEma100 = 0;
+			this.latestEvent = null;
+			this.crossoverEvents = new LinkedList<CrossoverEvent>();
 		}
 
-		return crossoverEvent;
+		public void evalEvent(Event event) {
+
+			long index = (event.getLastTrade().getSeconds() - this.startTime) / (5 * 60);
+			
+			// Found a later event for the current window,
+			// update latest event.
+			if (index == 0) {
+				this.latestEvent = event;
+				return;
+			}
+
+			float price = latestEvent == null ? 0 : latestEvent.getLastTradePrice();
+
+			float ema38 = (price * (2 / (1 + 38))) + this.prevEma38 * (1 - 2 / (1 + 38));
+			float ema100 = (price * (2 / (1 + 100))) + this.prevEma100 * (1 - 2 / (1 + 100));
+		
+
+			CrossoverEvent crossoverEvent = this.detectCrossoverEvent(
+				event,
+				this.prevEma38,
+				this.prevEma100,
+				ema38,
+				ema100
+			);
+
+			if (crossoverEvent != null) {
+				this.crossoverEvents.add(crossoverEvent);
+
+				while (this.crossoverEvents.size() > 3) {
+					this.crossoverEvents.remove(0);
+				}
+			}
+
+			this.prevEma100 = ema100;
+			this.prevEma38 = ema38;
+
+			this.startTime += index * (5 * 60);
+			this.latestEvent = event;
+		}
+
+		public List<CrossoverEvent> getCrossoverEvents() {
+			return this.crossoverEvents;
+		}
+
+		public float getEma38() {
+			return this.prevEma38;
+		}
+
+		public float getEma100() {
+			return this.prevEma100;
+		}
+
+		public CrossoverEvent detectCrossoverEvent (Event event, float pastEMA38, float pastEMA100, float currEMA38, float currEMA100) {
+
+			CrossoverEvent crossoverEvent = null;
+
+			if (pastEMA38 <= pastEMA100 && currEMA38 > currEMA100) {
+				crossoverEvent = CrossoverEvent.newBuilder().setSymbol(event.getSymbol())
+						.setSignalType(CrossoverEvent.SignalType.Buy).build();
+
+			} else if (pastEMA38 >= pastEMA100 && currEMA38 < currEMA100) {
+				crossoverEvent = CrossoverEvent.newBuilder().setSymbol(event.getSymbol())
+						.setSignalType(CrossoverEvent.SignalType.Sell).build();
+			}
+
+			return crossoverEvent;
+
+		}
 
 	}
 
