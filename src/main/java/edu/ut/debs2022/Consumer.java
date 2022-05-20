@@ -45,7 +45,6 @@ public class Consumer extends Thread {
 			} else {
 
 				batch = BatchCacheSingleton.getInstance().getNext();
-
 				TupleListResult results = calculateIndicators(batch);
 
 				ResultQ1 q1Result = ResultQ1.newBuilder()
@@ -86,8 +85,6 @@ public class Consumer extends Thread {
 	 */
 	private TupleListResult calculateIndicators(Batch batch) {
 
-		float new_ema38, new_ema100;
-
 		int size = batch.getEventsCount();
 
 		List<Indicator> indicatorsList = new ArrayList<Indicator>(size);
@@ -117,20 +114,29 @@ public class Consumer extends Thread {
 
 		}
 
-		// Go through all the trackers and add everything.
-		for (Tracker t: trackerDict.values()) {
+		List<String> lookup = batch.getLookupSymbolsList();
 
-			// Adding indicators.
+		// Only get indicators/crossovers for look up symbols.
+		for (String symbol: lookup) {
+
+			if (!trackerDict.containsKey(symbol)) {
+				continue;
+			}
+
+			Tracker t = trackerDict.get(symbol);
+
 			float ema38 = t.getEma38();
 			float ema100 = t.getEma100();
-			Indicator indicator = Indicator.newBuilder().setEma100(ema100).setEma38(ema38).build();
+
+			Indicator indicator = Indicator.newBuilder()
+					.setSymbol(symbol)
+					.setEma38(ema38)
+					.setEma100(ema100)
+					.build();
 
 			indicatorsList.add(indicator);
+			crossoverEventsList.addAll(t.getCrossoverEvents());
 
-
-			// Adding crossovers.
-			List<CrossoverEvent> crossovers = t.getCrossoverEvents();
-			crossoverEventsList.addAll(crossovers);
 		}
 
 		// create a new tuple result for both queries and return.
