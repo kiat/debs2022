@@ -6,7 +6,7 @@ plugins {
     //id 'idea'
 }
 
-group 'de.tum.i13.example'
+group 'edu.ut.debs2022'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -15,7 +15,7 @@ repositories {
 }
 
 application {
-    mainClass.set("de.tum.i13.Main")
+    mainClass.set("edu.ut.debs2022.Main")
 }
 
 protobuf {
@@ -51,7 +51,7 @@ jar {
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 
     manifest {
-        attributes "Main-Class": "de.tum.i13.Main"
+        attributes "Main-Class": "edu.ut.debs22.Main"
     }
 
     from {
@@ -64,11 +64,6 @@ tasks.processResources {
 }
 
 apply plugin: 'java'
-
-task(runWorker, dependsOn: 'classes', type: JavaExec) {
-    main = 'de.tum.i13.WorkerMain'
-    classpath = sourceSets.main.runtimeClasspath
-}
 
 
 dependencyManagement {
