@@ -6,8 +6,6 @@ import de.tum.i13.challenge.Benchmark;
 import de.tum.i13.challenge.BenchmarkConfiguration;
 import de.tum.i13.challenge.ChallengerGrpc;
 import de.tum.i13.challenge.Query;
-import edu.ut.debs2022.Consumer;
-import edu.ut.debs2022.Reader;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
@@ -28,8 +26,8 @@ public class Main {
 		BenchmarkConfiguration bc = BenchmarkConfiguration.newBuilder()
 				.setBenchmarkName("Java Test Run on " + new Date().toString()).addQueries(Query.Q1).addQueries(Query.Q2)
 				.setToken("zqultcyalnowfgxjlzlsztkcquycninr") // go to: https://challenge.msrg.in.tum.de/profile/
-//				.setBenchmarkType("Evaluation") // Benchmark Type for evaluation
-				.setBenchmarkType("Test") // Benchmark Type for testing
+				.setBenchmarkType("Evaluation") // Benchmark Type for evaluation
+//				.setBenchmarkType("Test") // Benchmark Type for testing
 				.build();
 
 //		 Create a new Benchmark
