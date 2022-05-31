@@ -55,3 +55,8 @@ Able to tune the number of producers, consumers, and the queue size for the prod
 
 
 
+# Server-Side System Implementation
+The server-side of the DEBS 2022 Grand Challenge Implementation is here:
+
+https://github.com/jawadtahir/CHALLENGER 
+
