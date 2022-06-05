@@ -1,10 +1,5 @@
 %% The first command in your LaTeX source must be the \documentclass command.
 \documentclass[sigconf]{acmart}
-
-
-
-
-
 \usepackage{listings}
 
 
@@ -60,8 +55,6 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 %% receive a unique submission ID from the organizers
 %% of the event, and this ID should be used as the parameter to this command.
 %%\acmSubmissionID{123-A56-BU3}
-
-
 \begin{document}
 
 % Original Title: \title{A High-Performance Stream Processing System Implementation for Monitoring Stock Market Data Stream}
@@ -154,7 +147,11 @@ morekeywords={*,...}            % if you want to add more keywords to the set
 \input{experiments}
 
 \section{Conclusion}\label{sec:conclustion}
-In this paper, we described our different architectures for a stock market data stream processing to implement the DEBS 2022 Grand Challenge. Our implementation and evaluation are limited due to the time constraints we had for this work. One potential improvement would be to implement it using a system programming language. Also, it would be interesting to evaluate how a from-scratch-implemented system would perform in this case compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink.
+In this paper, we described our different architectures for a stock market data stream processing to implement the DEBS 2022 Grand Challenge. 
+Our implementation and evaluation are limited due to the time constraints we had for this work. 
+One potential improvement would be to implement it using a system programming language. 
+Also, it would be interesting to evaluate how a from-scratch-implemented system would perform in this case 
+compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink.
 
 \section{Acknowledgment}
 We would like to thank the organizers of the DEBS 2022 Grand Challenge for developing this implementation challenge.
