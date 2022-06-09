@@ -7,7 +7,7 @@ The real-time extraction of such complex patterns to trigger buy or sell trading
 of high-performance event stream processing systems.
 
 % Describe briefly what the challenge is
-This year's 2022 DEBS Grand Challenge \cite{debs2022challenge} describes a system implementation based on two specific queries on the
+The 2022 DEBS Grand Challenge \cite{debs2022challenge} describes a system implementation based on two specific queries on the
 stock market event streams. The first query is defined to compute the Exponential Moving Average (EMA) with two different smoothing factors of 38 and 100.
 An exponential Moving Average is one of the moving averages and is defined as follows:
 
@@ -73,6 +73,8 @@ stream processing tasks.
 After considering all of the existing systems and their overhead trade-offs, we decided to implement the DEBS Grand Challenge from scratch,
 without using any of the existing systems like Apache Spark or Flink. Most of these systems have a different target like higher scalability than higher performance, so that 
 they have a large start-up delay and additional cluster management costs. 
+
+% https://asterios.katsifodimos.com/assets/publications/flink-deb.pdf
 
 % Our initial implementation is a prototype of the system in python to make sure that we understood the logic of the implementation challenge correctly. 
 First, we implemented the two data stream queries as a prototype system in python and run tests to check if the data streams are processed correctly, and the correct
