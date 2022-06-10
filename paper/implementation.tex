@@ -1,3 +1,18 @@
+
+
+
+
+
+\begin{figure*}[h]
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{./images/Parallel-Stream-Processing-System}
+        \caption{Event Dispatcher and Submitter Architecture}
+        \label{fig:parallel-srream-processing}
+    \end{center}
+\end{figure*}
+
+
+
 \section{Stream Processing Architecture}\label{sec:concepts}
 % Describe different ideas for distribution of events on multiple threads/processing and machines.
 Our data stream processing architecture is based on the event producers and consumers concept that can be used to distribute the
@@ -14,13 +29,7 @@ and the subsequent Query 2 results. For the computation of $EMAs$, each consumer
 last $EMA$ value of the previous batch for a given stock symbol.
 These consumer processes are the major query processing units that we call consumers for the sake of simplicity in this paper.
 
-\begin{figure*}[!ht]
-    \begin{center}
-        \includegraphics[width=0.7\textwidth]{./images/Parallel-Stream-Processing-System_v2}
-        \caption{Parallel Processing of Events By a Set of Producers and Consumers without a Data Dispatcher.}
-        \label{fig:parallel-srream-processing1}
-    \end{center}
-\end{figure*}
+
 
 To make sure that there is no single bottleneck or synchronization lock point in this processing architecture, we made each of the consumers
 (processing units) be responsible for the monitoring and the computation of a sub-set of stocks symbol. Each consumer accesses the stream batches
@@ -28,24 +37,41 @@ from the main memory cache and processes only the symbols (stock market data eve
 This can be implemented by using hash functions on stock symbol and mapping it to the unique identification number of the consumer.
 In our implementation, the hashing and distribution of the symbols to the consumers is processed in parallel by the producers.
 
-Each consumer has a hash table that it uses to memoize the previous values of the moving averages for different stock symbols. In order to optimize for memory and time complexity, the only data stored per symbol include: the latest event (closing price) for the current window, the $EMA_{38}$ and $EMA_{100}$ of the previous window, and the last three crossover events.
-Each consumer has to access events of each batch and compute those stock symbols that the consumer is responsible for. With this approach, each consumer can work independently of any other consumer in a functional form. Access to each data batch from the queue should be implemented in an efficient manner so that each consumer does not read the entire batch to filter out the stock symbols it is responsible for.
+Each consumer has a hash table that it uses to memoize the previous values of the moving averages for different stock symbols. In order to optimize 
+for memory and time complexity, the only data stored per symbol include: the latest event (closing price) for the current window, the $EMA_{38}$ and $EMA_{100}$ of 
+the previous window, and the last three crossover events.
+Each consumer has to access events of each batch and compute those stock symbols that the consumer is responsible for. With this approach, each consumer 
+can work independently of any other consumer in a functional form. Access to each data batch from the queue should be implemented in an efficient manner so that each 
+consumer does not read the entire batch to filter out the stock symbols it is responsible for.
 
-\begin{figure*}[!ht]
+
+
+\begin{figure}
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{./images/Parallel-Stream-Processing-System}
-        \caption{Event Dispatcher and Submitter Architecture}
-        \label{fig:parallel-srream-processing}
+        \includegraphics[width=0.43\textwidth]{./images/Stream-Batch-Distributions}
+        \caption{An Event Data Dispatcher}
+        \label{fig:batch-distributions}
     \end{center}
-\end{figure*}
+\end{figure}
 
-
-Figures \ref{fig:parallel-srream-processing} and \ref{fig:batch-distributions} illustrate the system design if we have included an event dispatcher and an event submitter. We do not have a dispatcher and submitter because of efficiency reasons and because of the correctness of query processing. If we dispatch the event batches as shown in Figure \ref{fig:parallel-srream-processing}, for example, by round-robin batch distribution, then each consumer has to work on all stock symbols or a subset of them.
+Figures \ref{fig:parallel-srream-processing} and \ref{fig:batch-distributions} illustrate the system design if we have included an event dispatcher and 
+an event submitter. We do not have a dispatcher and submitter because of efficiency reasons and because of the correctness of query processing. If we dispatch the 
+event batches as shown in Figure \ref{fig:parallel-srream-processing}, for example, by round-robin batch distribution, then each consumer has to work on all stock symbols or a subset of them.
 
 If consumers work on all of the events, then each consumer is required to know the previous moving averages from the immediate past batch to compute the new $EMAs$ for
-the current data batch; implying a strict dependence on the preceding consumer before the current consumer can proceed. This issue would cause incorrect processing, because a consumer should work in a parallel distributed design, without any dependencies on each other's results. In the former case, if the consumers work on a subset of stocks, we would need to pass every batch to all
-of the consumers, and it is better to do this task in an integrated form with reading from the queue.
+the current data batch; implying a strict dependence on the preceding consumer before the current consumer can proceed. This issue would cause incorrect processing, because a 
+consumer should work in a parallel distributed design, without any dependencies on each other's results. In the former case, if the consumers work on a subset of stocks, we would 
+need to pass every batch to all of the consumers, and it is better to do this task in an integrated form with reading from the queue.
 
+
+
+\begin{figure*}
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{./images/Stream-Batch-Distributions_op2}
+        \caption{A Sequential Processing Pipeline. Each consumer reads a batch and passes to the next consumer.}
+        \label{fig:Sequential-batch-distributions}
+    \end{center}
+\end{figure*}
 
 Figure \ref{fig:Sequential-batch-distributions} illustrates how sequential data stream processing can work to process the batches in multiple
 serial event consumers. Each processing unit will pick up and process a subset of stock market events.
@@ -59,21 +85,8 @@ If the stream of data is terminated, the stream processing system will terminate
  and there are no event batches in the buffer queue.
 
 
-\begin{figure*}[!h]
-    \begin{center}
-        \includegraphics[width=0.7\textwidth]{./images/Stream-Batch-Distributions}
-        \caption{An Event Data Dispatcher (Avoiding having a Dispatcher)}
-        \label{fig:batch-distributions}
-    \end{center}
-\end{figure*}
 
-\begin{figure*}[!h]
-    \begin{center}
-        \includegraphics[width=0.7\textwidth]{./images/Stream-Batch-Distributions_op2}
-        \caption{A Sequential Processing Pipeline. Each consumer reads a batch and passes to the next consumer.}
-        \label{fig:Sequential-batch-distributions}
-    \end{center}
-\end{figure*}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,15 +95,53 @@ If the stream of data is terminated, the stream processing system will terminate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+
 \section{Data Stream Windowing}\label{sec:windows}
 Based on DEBS Challenge \cite{debs2022challenge} description, our system has to compute on events grouped into windows of 5 minute length, tumbling,
 non-overlapping windows. The system clock timer starts when it receives the first event and restarts every 5 minutes. As a preprocessing step, our system reads the events
 into main memory and generates data batches, which are then cached. The data batches are thereafter passed to the next processing step for the subsequent computation.
+    
+    
+\section{Implementation Details}\label{sec:implementation}
+The described architecture can be implemented using multiple threads on a single machine with multiple CPUs, or it can be distributed over a cluster of machines, each with multiple CPU cores.
+Our first rapid alpha implementation of the system was a multi-threaded Python implementation to make sure that we understood the challenge tasks and are able to process the queries in the correct form.
+Later, we implemented the whole system again in Java. Both of these implementations are open sourced on Github\footnote{\url{https://github.com/kiat/debs2022} last update June, 2022}.
+
+
+We realized that the processing task of Query 2 is a very simple computation that can be integrated with the Query 1 task.
+The Listing \ref{lst:query2} provides a simple Python function that we use to check if we have a match for a breakout pattern.
+This code can detect the breakouts (Crossover points) shown in Figure \ref{fig:EMAs}.
+% Discuss the details of implementation.
+% Add code how we do the Query 2.
+
+
+
+\subsection{Distributed Cluster Implementation.}
+The architecture in Figure \ref{fig:parallel-srream-processing} can be implemented on a cluster of machines. 
+The cache to store the stream batches can be implemented using shared memory on a single machine or using a service bus like 
+Apache Kafka\footnote{\url{https://kafka.apache.org/}} or Apache Camel\footnote{\url{https://camel.apache.org/}} to store
+the events and let multiple consumer clients access the streaming data batches.
+
+Each consumer can subscribe to the event bus (e.g., Kafka) and receive only those stock prices that the specific consumer is responsible
+for. In this way, there are no dependencies between the consumers and there is no need to pass over data batches to the next
+consumer; also, each consumer can submit the query result to the output sink.
+
+One other implementation detail is to use a high-efficient data model and serialization framework for the data transmission between
+the processing nodes. Studies have shown that choosing the correct data model and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}.
+
+We suggest implementing the proposed architectural solution in a system programming language, like C++ or Rust, because of the statically typed variables 
+and manually managed memory without an overhead of automated garbage collection. As described in Section \ref{sec:concepts}, the proposed architecture 
+can be implemented using multiple threads on a single machine with multiple CPUs or distributed over a cluster of machines each with multiple CPU cores.
+Our first rapid alpha implementation of the system is in multi-threaded Python code to make sure that we understand the challenge tasks and be able to process the queries in the correct form.
 
 
 
 
-\begin{minipage}{0.9\linewidth}
+
+
+\begin{minipage}{0.8\linewidth}
     \begin{lstlisting}[caption={The computation for Query 2 - Breakout Patterns of EMA38 and EMA100}, label={lst:query2},language=Python]
     def get_crossover(
         ema_38: float,
@@ -123,35 +174,5 @@ into main memory and generates data batches, which are then cached. The data bat
                 signal_type=type
             )
     return None
-    \end{lstlisting}
-    \end{minipage}
-
-
-
-\section{Implementation Details}\label{sec:implementation}
-The described architecture can be implemented using multiple threads on a single machine with multiple CPUs, or it can be distributed over a cluster of machines, each with multiple CPU cores.
-Our first rapid alpha implementation of the system was a multi-threaded Python implementation to make sure that we understood the challenge tasks and are able to process the queries in the correct form.
-Later, we implemented the whole system again in Java. Both of these implementations are open sourced on Github\footnote{\url{https://github.com/kiat/debs2022} last update June, 2022}.
-
-
-We realized that the processing task of Query 2 is a very simple computation that can be integrated with the Query 1 task.
-The Listing \ref{lst:query2} provides a simple Python function that we use to check if we have a match for a breakout pattern.
-This code can detect the breakouts (Crossover points) shown in Figure \ref{fig:EMAs}.
-% Discuss the details of implementation.
-% Add code how we do the Query 2.
-
-
-
-\subsection{Distributed Cluster Implementation.}
-The architecture in Figure \ref{fig:parallel-srream-processing} can be implemented on a cluster of machines. The cache to store the stream batches can be implemented using shared memory on a single machine or using a service bus like Apache Kafka\footnote{\url{https://kafka.apache.org/}} or Apache Camel\footnote{\url{https://camel.apache.org/}} to store
-the events and let multiple consumer clients access the streaming data batches.
-
-Each consumer can subscribe to the event bus (e.g., Kafka) and receive only those stock prices that the specific consumer is responsible
-for. In this way, there are no dependencies between the consumers and there is no need to pass over data batches to the next
-consumer; also, each consumer can submit the query result to the output sink.
-
-One other implementation detail is to use a high-efficient data model and serialization framework for the data transmission between
-the processing nodes. Studies have shown that choosing the correct data model and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}.
-
-We suggest implementing the proposed architectural solution in a system programming language, like C++ or Rust, because of the statically typed variables and manually managed memory without an overhead of automated garbage collection. As described in Section \ref{sec:concepts}, the proposed architecture can be implemented using multiple threads on a single machine with multiple CPUs or distributed over a cluster of machines each with multiple CPU cores.
-Our first rapid alpha implementation of the system is in multi-threaded Python code to make sure that we understand the challenge tasks and be able to process the queries in the correct form.
+\end{lstlisting}
+\end{minipage}

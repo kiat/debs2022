@@ -109,7 +109,7 @@ Our implementation in Python and Java are available on Github\footnote{\url{http
 % High-Performance computing problems
 % Scalability issues
 
-\begin{figure}[!ht]
+\begin{figure}[ht]
     \begin{center}
         \includegraphics[width=0.4\textwidth]{./images/query2_example_200.png}
         \caption{Exponential Moving Average of 38 and 100 for the first 400 events.}
@@ -123,3 +123,13 @@ a stream processing system using multiple processing threads on a single machine
 architecture can be extended to process the data stream on a cluster of machines (multi-processing).  Section \ref{sec:implementation} provides
 a brief description of important implementation details and Section \ref{sec:experiments} provides a brief overview of example
 experiment results.
+
+
+
+\begin{figure*}[ht]
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{./images/Parallel-Stream-Processing-System_v2}
+        \caption{Parallel Processing of Events By a Set of Producers and Consumers without a Data Dispatcher.}
+        \label{fig:parallel-srream-processing1}
+    \end{center}
+\end{figure*}
