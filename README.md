@@ -3,6 +3,8 @@
 
 This repository is the group 17 of the ACM DEBS 2022 Grand Challenge. 
 
+https://2022.debs.org/call-for-grand-challenge-solutions/
+
 
 # Screenshots of DEBS 2022 Grand Challenge Evaluation System 
 ![Latency](DEBS2022-2022-05-28-Throuput.png)
