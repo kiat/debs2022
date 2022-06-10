@@ -4,6 +4,13 @@
 This repository is the group 17 of the ACM DEBS 2022 Grand Challenge. 
 
 
+# Screenshots of DEBS 2022 Grand Challenge Evaluation System 
+![Latency](DEBS2022-2022-05-28-Throuput.png)
+![Throuput](DEBS2022-2022-05-28-Latency.png)
+
+
+
+
 # Java Implementation 
 
 
