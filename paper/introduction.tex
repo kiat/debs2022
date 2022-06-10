@@ -74,18 +74,19 @@ After considering all of the existing systems and their overhead trade-offs, we 
 without using any of the existing systems like Apache Spark or Flink. Most of these systems have a different target like higher scalability than higher performance, so that 
 they have a large start-up delay and additional cluster management costs. 
 
+% https://asterios.katsifodimos.com/assets/publications/flink-deb.pdf
 
 Some examples of the performance overheads that systems like Apache Spark and Flink have are:
 
 \begin{itemize}
-    \item Most of the systems are designed in a cluster setting and include cluster managements like additional communications between the master process/es and worker processes.
-    For example, separate processes are started as JobManager and TaskManager to coordinate different task executions. 
+    \item Most of the systems are designed in a distributed cluster computing setting which include cluster managements like communications between the master process/es and worker processes.
+    Separate processes are started as JobManager and TaskManager to coordinate different task executions. 
 
     \item These systems are designed for the trade-off between higher scalability and higher stream throughput/latency performance. 
     The described DEBS 2022 challenge does not include a very large  data stream that we would need to design a high-scalable data stream processing system. But our main system design goal is to achieve 
     high-throughput and low-latency. Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
     
-    \item Such systems use special types of control events, like  checkpoint barriers,  watermarks signaling or iteration barriers to be able to generate snapshots of 
+    \item Such systems use special types of control events, like  checkpoint barriers, watermarks signaling or iteration barriers to be able to generate snapshots of 
     the data stream for example to provide guarantee a FIFO order of events and be able to do stream recovery \cite{df177547a4364bb0a7e2470b83025bb0}. 
     In our from scratch implementation, we can make sure that our stream processing is stateful and windows are correctly generated from the stream batches.
 
@@ -99,9 +100,6 @@ Some examples of the performance overheads that systems like Apache Spark and Fl
 \end{itemize}
 
 
-% https://asterios.katsifodimos.com/assets/publications/flink-deb.pdf
-
-% Our initial implementation is a prototype of the system in python to make sure that we understood the logic of the implementation challenge correctly. 
 First, we implemented the two data stream queries as a prototype system in python and run tests to check if the data streams are processed correctly, and the correct
 results are submitted to the DEBS 2022 evaluation system. In the second project phase we implemented the same system in Java to achieve better processing 
 performance (a better performance can be achieved by using a system language like C++ or Rust).  
