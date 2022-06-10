@@ -147,11 +147,11 @@ The architecture in Figure \ref{fig:parallel-srream-processing} can be implement
 the events and let multiple consumer clients access the streaming data batches.
 
 Each consumer can subscribe to the event bus (e.g., Kafka) and receive only those stock prices that the specific consumer is responsible
-for. In this way, there will no dependencies between the consumers and there is no need to pass over the data batches to the next
+for. In this way, there are no dependencies between the consumers and there is no need to pass over data batches to the next
 consumer; also, each consumer can submit the query result to the output sink.
 
 One other implementation detail is to use a high-efficient data model and serialization framework for the data transmission between
 the processing nodes. Studies have shown that choosing the correct data model and serialization have a huge impact on data processing performance \cite{DBLP:conf/cloud/SikdarTJ17}.
 
-We suggest implementing the proposed architectural solution in a system programming language like C++ or Rust, because of the statically typed variables and manually managed memory without an overhead of automated garbage collection. As described in Section \ref{sec:concepts}, the proposed architecture can be implemented using multiple threads on a single machine with multiple CPUs or distributed over a cluster of machines each with multiple CPU cores.
+We suggest implementing the proposed architectural solution in a system programming language, like C++ or Rust, because of the statically typed variables and manually managed memory without an overhead of automated garbage collection. As described in Section \ref{sec:concepts}, the proposed architecture can be implemented using multiple threads on a single machine with multiple CPUs or distributed over a cluster of machines each with multiple CPU cores.
 Our first rapid alpha implementation of the system is in multi-threaded Python code to make sure that we understand the challenge tasks and be able to process the queries in the correct form.
