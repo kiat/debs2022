@@ -109,12 +109,12 @@ The described architecture can be implemented using multiple threads on a single
 Our first rapid alpha implementation of the system was a multi-threaded Python implementation to make sure that we understood the challenge tasks and are able to process the queries in the correct form.
 Later, we implemented the whole system again in Java. Both of these implementations are open sourced on Github\footnote{\url{https://github.com/kiat/debs2022} , last update June, 2022}.
 
-Our Java implementation includes two simple threads, one is the event producer (event batch Reader Thread that communicates over the DEBS API with the event generator server). 
-There is a single event producer/reader thread that reads event batches, creates and adds event batch windows (5 min. windows) to the cache. In parallel, the event consumer process the events for the 
-query 1 and query 2. We realized that the processing task of Query 2 is a very simple computation that can be integrated with the Query 1 task. 
-In our Java implementation we have migrated these two tasks in within the batch consumer thread. The caches are java lists of batches and a java HashMap that 
-caches event windows for each stock symbols. To achieve better performance we pre-allocate both of these caches Java ArrayList and HashMap with a specific size. 
-The two threads are synchronized over a simple lock mechanism and thread notification.    
+Our Java implementation includes two simple threads, one is the event producer (or event batch Reader Thread that communicates over the DEBS Challenge API). 
+The Reader reads the stream of event batches, creates and adds event batch windows (5 min. windows) to an intermediate cache. In parallel, another consumer thread processes the cached event windows data 
+for the results of query 1 and query 2. We have integrated processing the query 2 with the Query 1 task within the consumer thread. 
+The caches are java lists of batches and a java HashMap that caches event windows for each stock symbols. 
+To achieve better performance we pre-allocate both of these caches Java ArrayList and HashMap with a specific size. 
+The two threads are synchronized over a simple lock mechanism and thread notification. The results of both queries are submitted by the consumer thread to the DEBS Challenge API.
 
 
 % The Listing \ref{lst:query2} provides a simple Python function that we use to check if we have a match for a breakout pattern.
