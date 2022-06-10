@@ -111,8 +111,9 @@ Later, we implemented the whole system again in Java. Both of these implementati
 
 
 We realized that the processing task of Query 2 is a very simple computation that can be integrated with the Query 1 task.
-The Listing \ref{lst:query2} provides a simple Python function that we use to check if we have a match for a breakout pattern.
-This code can detect the breakouts (Crossover points) shown in Figure \ref{fig:EMAs}.
+
+% The Listing \ref{lst:query2} provides a simple Python function that we use to check if we have a match for a breakout pattern.
+% This code can detect the breakouts (Crossover points) shown in Figure \ref{fig:EMAs}.
 % Discuss the details of implementation.
 % Add code how we do the Query 2.
 
@@ -141,38 +142,38 @@ Our first rapid alpha implementation of the system is in multi-threaded Python c
 
 
 
-\begin{minipage}{0.8\linewidth}
-    \begin{lstlisting}[caption={The computation for Query 2 - Breakout Patterns of EMA38 and EMA100}, label={lst:query2},language=Python]
-    def get_crossover(
-        ema_38: float,
-        ema_100: float,
-        cur_38: float,
-        cur_100: float,
-        e: ch.Event
-    ) -> Optional[ch.CrossoverEvent]:
-    """ Helper function for determining crossovers.
-    Args:
-        ema_38 (float): The previous EMA38 value.
-        ema_100 (float): The previous EMA100 value.
-        cur_38 (float): The current EMA38 value.
-        cur_100 (float): The current EMA100 value.
-        e (ch.Event): Event.
-    Returns:
-        Optional[ch.Crossover]: A crossover event.
-    """
-    type = None
-    if ema_38 <= ema_100 and cur_38 > cur_100:
-        type = ch.CrossoverEvent.SignalType.Buy
-    elif ema_38 >= ema_100 and cur_38 < cur_100:
-        type = ch.CrossoverEvent.SignalType.Sell
+% \begin{minipage}{0.8\linewidth}
+%     \begin{lstlisting}[caption={The computation for Query 2 - Breakout Patterns of EMA38 and EMA100}, label={lst:query2},language=Python]
+%     def get_crossover(
+%         ema_38: float,
+%         ema_100: float,
+%         cur_38: float,
+%         cur_100: float,
+%         e: ch.Event
+%     ) -> Optional[ch.CrossoverEvent]:
+%     """ Helper function for determining crossovers.
+%     Args:
+%         ema_38 (float): The previous EMA38 value.
+%         ema_100 (float): The previous EMA100 value.
+%         cur_38 (float): The current EMA38 value.
+%         cur_100 (float): The current EMA100 value.
+%         e (ch.Event): Event.
+%     Returns:
+%         Optional[ch.Crossover]: A crossover event.
+%     """
+%     type = None
+%     if ema_38 <= ema_100 and cur_38 > cur_100:
+%         type = ch.CrossoverEvent.SignalType.Buy
+%     elif ema_38 >= ema_100 and cur_38 < cur_100:
+%         type = ch.CrossoverEvent.SignalType.Sell
 
-    if type is not None and e is not None:
-        return ch.CrossoverEvent(
-                ts=e.last_trade,
-                symbol=e.symbol,
-                security_type=e.security_type,
-                signal_type=type
-            )
-    return None
-\end{lstlisting}
-\end{minipage}
+%     if type is not None and e is not None:
+%         return ch.CrossoverEvent(
+%                 ts=e.last_trade,
+%                 symbol=e.symbol,
+%                 security_type=e.security_type,
+%                 signal_type=type
+%             )
+%     return None
+% \end{lstlisting}
+% \end{minipage}
