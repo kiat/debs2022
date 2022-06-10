@@ -86,13 +86,15 @@ Some examples of the performance overheads that systems like Apache Spark and Fl
     high-throughput and low-latency. Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
     
     \item Such systems use special types of control events, like  checkpoint barriers,  watermarks signaling or iteration barriers to be able to generate snapshots of 
-    the data stream for example to provide guarantee a FIFO order of events and be able to do stream recovery \cite{df177547a4364bb0a7e2470b83025bb0}. In our from scratch implementation, we can make sure that our stream processing 
-    is stateful and windows are correctly generated from the stream batches.
+    the data stream for example to provide guarantee a FIFO order of events and be able to do stream recovery \cite{df177547a4364bb0a7e2470b83025bb0}. 
+    In our from scratch implementation, we can make sure that our stream processing is stateful and windows are correctly generated from the stream batches.
 
-    \item The cluster stream processing systems have a lots of configuration parameters to modify the cluster settings. For example these configurations control number of cluster executor processes and threads. To achieve highest performance, we would need 
-    to experiment a lot to set the system to highest throughput and latency performance. With our from scratch implementation, we can better control the system parameters like number of processes or threads. 
+    \item The cluster stream processing systems have a lots of configuration parameters to modify the cluster settings. 
+    For example these configurations control number of cluster executor processes and threads. To achieve highest performance, we would need 
+    to experiment a lot to set the system to highest throughput and latency performance. 
+    With our from scratch implementation, we can better control the system parameters like number of processes or threads. 
 
-    \item our data stream processing queries are very simple and there is not need to have a complex query processing and query optimization system. 
+    \item The DEBS Challenge queries are very simple patterns that we can implement in a programming language, and there is no need to have a complex query processing and query optimization system. 
 
 \end{itemize}
 
