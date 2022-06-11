@@ -79,23 +79,25 @@ they have a large start-up delay and additional cluster management costs.
 Some examples of the performance overheads that systems like Apache Spark and Flink have are:
 
 \begin{itemize}
-    \item Most of the systems are designed in a distributed cluster computing setting which include cluster managements like communications between the master process/es and worker processes.
-    Separate processes are started as JobManager and TaskManager to coordinate different task executions. 
+    \item Most of these systems are designed in a distributed cluster computing setting which includes cluster managements like communications between the master process/es and worker processes.
+    Many processes are started as JobManager and TaskManager to coordinate different task executions. 
 
-    \item These systems are designed for the trade-off between higher scalability and higher stream throughput/latency performance. 
-    The described DEBS 2022 challenge does not include a very large  data stream that we would need to design a high-scalable data stream processing system. But our main system design goal is to achieve 
-    high-throughput and low-latency. Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
+    \item These systems are designed to optimize the trade-off between higher scalability and higher stream throughput/latency performance. 
+    The described DEBS 2022 challenge does not include a very large data stream that we would need to design a high-scalable data stream processing system. 
+    But our main system design goal is to achieve high throughput and low-latency. 
+    Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
     
-    \item Such systems use special types of control events, like  checkpoint barriers, watermarks signaling or iteration barriers to be able to generate snapshots of 
-    the data stream for example to provide guarantee a FIFO order of events and be able to do stream recovery \cite{df177547a4364bb0a7e2470b83025bb0}. 
-    In our from scratch implementation, we can make sure that our stream processing is stateful and windows are correctly generated from the stream batches.
+    \item Such systems use special types of control events, like  checkpoint barriers, watermarks signaling or iteration barriers to provide guarantee of a FIFO order of
+     events, to generate snapshots of the data stream for example, or be able to do stream recovery \cite{df177547a4364bb0a7e2470b83025bb0}. 
+    In our system we can make sure that our stream processing is a stateful processing, and windows are correctly generated from the stream batches. 
+    And no additional internal batch generations are needed. 
 
-    \item The cluster stream processing systems have a lots of configuration parameters to modify the cluster settings. 
-    For example these configurations control number of cluster executor processes and threads. To achieve highest performance, we would need 
-    to experiment a lot to set the system to highest throughput and latency performance. 
-    With our from scratch implementation, we can better control the system parameters like number of processes or threads. 
+    \item The cluster stream processing systems have many configuration parameters which modify the performance stream processing. 
+    For example, the configuration parameters control the number of cluster executor processes and threads. 
+    With our implementation, we can better control the system parameters like number of processes or threads. 
 
-    \item The DEBS Challenge queries are very simple patterns that we can implement in a programming language, and there is no need to have a complex query processing and query optimization system. 
+    \item The DEBS Challenge queries are simple patterns based that we can implement in a programming language in an optimize form, and 
+    there is no need to have a complex query processing and query optimization system. 
 
 \end{itemize}
 

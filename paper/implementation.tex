@@ -26,7 +26,6 @@ last $EMA$ value of the previous batch for a given stock symbol.
 These consumer processes are the major query processing units that we call consumers for the sake of simplicity in this paper.
 
 
-
 To make sure that there is no single bottleneck or synchronization lock point in this processing architecture, we made each of the consumers
 (processing units) be responsible for the monitoring and the computation of a sub-set of stocks symbol. Each consumer accesses the stream batches
 from the main memory cache and processes only the symbols (stock market data events) that this consumer is responsible for.
