@@ -102,10 +102,13 @@ Some examples of the performance overheads that systems like Apache Spark and Fl
 \end{itemize}
 
 
-First, we implemented the two data stream queries as a prototype system in python and run tests to check if the data streams are processed correctly, and the correct
-results are submitted to the DEBS 2022 evaluation system. In the second project phase we implemented the same system in Java to achieve better processing 
-performance (a better performance can be achieved by using a system language like C++ or Rust).  
-Our implementation in Python and Java are available on Github\footnote{\url{https://github.com/kiat/debs2022} last update June, 2022}
+We have implemented the Challenge queries as our initial prototype system in python and run multiple tests to check if the data streams are processed correctly, and the correct
+results are submitted to the DEBS 2022 evaluation system. Our Python implementation includes many iterations over the single event objects in a window stream. A vectorization of the
+many iterations could improve the performance by running mapping bulk operations to match the query 1 and query 2. Also, we experimented with running multi-threading to process the events. 
+
+In a subsequent step, we implemented the same architecture in Java to achieve higher processing 
+performance (a better performance can be achieved by using a system programming language like C++ or Rust).  
+Our implementation in Python and Java are available on Github\footnote{\url{https://github.com/kiat/debs2022} , last updated June, 2022}
 
 
 % High-Performance computing problems
