@@ -8,12 +8,13 @@
 
 % \title{C - Big Data Analysis}
 \title{Grand Challenge: A High-Performance Processing System for Monitoring Stock Market Data Stream}
-% \subtitle{Gradient Descent}
+\subtitle{ACM  DEBS 2022, Copenhagen Denmark}
 % \date{\today}
 \date{June, 2022}
-\author{Kevin Li, Daniel Fernandez, David Klingler, Yuhan Gao, Jacob Rivera and Kia Teymourian}
+
+\author{\footnotesize{Kevin Li, Daniel Fernandez, David Klingler, Yuhan Gao, Jacob Rivera and Kia Teymourian}}
 \institute{The University of Texas at Austin}
-\institute{Group 17}
+% \institute{Group 17}
 
 \begin{document}
 
@@ -37,40 +38,30 @@
 
 \begin{frame}[fragile]{DEBS 2022 - Grand Challenge }
 
-
-
-
-
-
-
+\begin{itemize}
+    \item Two queries on Stock Market Stream Data`'
+    \item The first query is defined to compute the Exponential Moving Average (EMA) with two different smoothing factors of 38 and 100.
+    \item The sequent query is a breakout pattern based on the first query. 
+\end{itemize}
+    
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}[fragile]{ }
-
-
-
-
-
-
-\end{frame}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-\begin{frame}[fragile]{ }
-
-
-
-
-
-
-
-
+\begin{frame}[fragile]{Exponential Moving Average }
+    
+    \begin{align*}
+        EMA_t = \begin{cases}
+            Y_0 &  t = 0 \\
+            \alpha Y_t + (1-\alpha) EMA_{t-1}& t>0 \\
+            \end{cases}
+    \end{align*}
+    
+    \begin{itemize}
+        \item The coefficient $\alpha$ represents the degree of weighting decrease, a constant smoothing factor between 0 and 1.
+        \item $\alpha = \frac{2}{1+j}$ where $j$ is a smoothing factor with $j \in \{38, 100 \}$.
+    \end{itemize}
+    
     
 \end{frame}
 
@@ -79,25 +70,62 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{ }
+
+\begin{frame}[fragile]{Example of Stock Price Fluctuations Over Time }
 
 
 
+    \begin{figure}
+        \begin{center}
+            \includegraphics[width=1\textwidth]{../paper/images/stock_example.png}
+            \caption{An Example of Stock Price Fluctuations Over Time}
+            \label{fig:stock}
+        \end{center}
+    \end{figure}
+    
+    
+    
+\end{frame}
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Buy and Sell advice based on Breakout Patterns of EMA 38 and 100  }
+
+
+    \begin{figure}
+        \begin{center}
+            \includegraphics[width=1\textwidth]{../paper/images/query2_example.png}
+            \caption{Example of Query 2 - Buy and Sell advice based on Breakout Patterns of EMA 38 and 100}
+            \label{fig:EMAs}
+         \end{center}
+    \end{figure}
     
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{ }
+\begin{frame}[fragile]{ Use one of the OSS or implement from scratch?}
 
 
+    Should we use one of the Open Source Stream processing systems like: 
+\begin{itemize}
+    \item \blueb{Apache Spark - Streaming}
+    \item \blueb{Apache Flink - Streaming}
+    \item \blueb{Apache Storm}
+    \item \blueb{Apache Kafka for streaming pipelines} 
+    \item \blueb{Esper Stream processing}
+    \item  ... 
+\end{itemize}
 
-
-
+    We decided to implement the DEBS Grand Challenge from scratch. 
     
+    \redb{Why?}
+    
+        
 \end{frame}
 
 
