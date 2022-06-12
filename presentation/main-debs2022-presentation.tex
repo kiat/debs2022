@@ -6,6 +6,10 @@
 \usepackage{multirow}
 \usepackage{algpseudocode}
 
+% Beamer Notes
+% https://tex.stackexchange.com/questions/419864/notes-on-the-side-of-beamer-slides
+
+
 % \title{C - Big Data Analysis}
 \title{Grand Challenge: A High-Performance Processing System for Monitoring Stock Market Data Stream}
 \subtitle{ACM  DEBS 2022, Copenhagen Denmark}
@@ -27,14 +31,16 @@
 
 
 
-% \begin{frame}{Table of contents}
-%   \setbeamertemplate{section in toc}[sections numbered]
-%  \tableofcontents[hideallsubsections]
-% \end{frame}
+\begin{frame}{Table of contents}
+  \setbeamertemplate{section in toc}[sections numbered]
+ \tableofcontents[hideallsubsections]
+\end{frame}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
 
 \begin{frame}[fragile]{DEBS 2022 - Grand Challenge }
 
@@ -118,13 +124,13 @@
     \item \blueb{Apache Storm}
     \item \blueb{Apache Kafka for streaming pipelines} 
     \item \blueb{Esper Stream processing}
+    \item \blueb{WindFlow}\footnote{WindFlow data stream processing \url{https://paragroup.github.io/WindFlow/}} in C++ 
     \item  ... 
 \end{itemize}
 
     We decided to implement the DEBS Grand Challenge from scratch. 
     
-    \redb{Why?}
-    
+    \redb{Why?}   
         
 \end{frame}
 
@@ -132,11 +138,57 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{ }
+\begin{frame}[fragile]{Why implementing from scratch? }
 
 
+    \begin{itemize}
+            
+        \item The Challenge queries are simple and we can optimize the processing in our implementation much better. 
+        \item Our stream throughput is not very high. Maximum a Batch of 10k events. 
+        
 
+        \item Systems like Spark or Flink include internal data processes to name a few: 
+        
+        \begin{itemize}
+            \item Communications between the master and worker processes,
+            \item Internal caching and pipeline generations including batch processing, blocking data exchanges, 
+            \item checkpoint barriers, watermarks signaling or iteration barriers to provide guarantee of a FIFO order of and 
+            snapshots of the data stream
+   
+        \end{itemize}
+         
+         %  \item Most of these systems are designed in a distributed cluster computing setting which includes cluster managements like communications between the master process/es and worker processes.
+        %  Many processes are started as JobManager and TaskManager to coordinate different task executions. 
+     
+        %  \item These systems are designed to optimize the trade-off between higher scalability and higher stream throughput/latency performance. 
+        %  The described DEBS 2022 challenge does not include a very large data stream that we would need to design a high-scalable data stream processing system. 
+        %  But our main system design goal is to achieve high throughput and low-latency. 
+        %  Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
+    
+        \item Lots of configuration parameters which modifies the performance/latency. 
+        
+        % These systems are designed to optimize the trade-off between higher scalability and higher stream throughput/latency performance. 
+        % The described DEBS 2022 challenge does not include a very large data stream that we would need to design a high-scalable data stream processing system. 
+        % But our main system design goal is to achieve high throughput and low-latency. 
+        % Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
+        
+        % \item 
+        
+        % Such systems use special types of control events, like  checkpoint barriers, watermarks signaling or iteration barriers to provide guarantee of a FIFO order of
+        %  events, to generate snapshots of the data stream for example, or be able to do stream recovery \cite{df177547a4364bb0a7e2470b83025bb0}. 
+        % In our system we can make sure that our stream processing is a stateful processing, and windows are correctly generated from the stream batches. 
+        % And no additional internal batch generations are needed. 
+    
+        % \item 
+        
+        % The cluster stream processing systems have many configuration parameters which modify the performance stream processing. 
+        % For example, the configuration parameters control the number of cluster executor processes and threads. 
+        % With our implementation, we can better control the system parameters like number of processes or threads. 
 
+    
+    \end{itemize}
+
+    \redb{Our goal was correctnes and highest possible throughput and low latency.} 
 
     
 \end{frame}
@@ -145,15 +197,279 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{ }
+\section{Architectural Design}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Parallel Processing }
+
+
+    \begin{figure}[ht]
+        \begin{center}
+            \includegraphics[width=0.8\textwidth]{../paper/images/Parallel-Stream-Processing-System_v2}
+            \caption{Parallel Processing of Events By a Set of Producers and Consumers without a Data Dispatcher.}
+            \label{fig:parallel-srream-processing1}
+        \end{center}
+    \end{figure}
+
+    \begin{itemize}
+        \item Reading Batches and Caching them 
+        \item The Reader reads from the DEBS Challenge API
+        \item The Submitter had to be a single submitter
+    \end{itemize}
+
+    
+\end{frame}
 
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Event Dispatcher and Submitter Architecture }
+    
+    \begin{figure}[h]
+        \begin{center}
+            \includegraphics[width=0.8\textwidth]{../paper/images/Parallel-Stream-Processing-System}
+            \caption{Event Dispatcher and Submitter Architecture}
+            \label{fig:parallel-srream-processing}
+        \end{center}
+    \end{figure}
+
+
+    \begin{itemize}
+        \item Event Batch Dispatcher distributes the batches
+        \item Producers read the Event from API, create internal data windows
+        \item Event Windows are cached similar to Figure \ref{fig:parallel-srream-processing1} 
+    \end{itemize}
+    
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Event Data Dispatcher  }
+
+        \begin{figure}
+            \begin{center}
+                \includegraphics[width=0.7\textwidth]{../paper/images/Stream-Batch-Distributions}
+                \caption{An Event Data Dispatcher}
+                \label{fig:batch-distributions}
+            \end{center}
+        \end{figure}
+     
+        \begin{figure}
+            \begin{center}
+                \includegraphics[width=1\textwidth]{../paper/images/Stream-Batch-Distributions_op2}
+                \caption{A Sequential Processing Pipeline. Each consumer reads a batch and passes to the next consumer.}
+                \label{fig:Sequential-batch-distributions}
+            \end{center}
+        \end{figure}
+
+\end{frame}
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{ Sequential Processing Pipeline }
+    
+
+ 
+    \begin{figure}
+        \begin{center}
+            \includegraphics[width=1\textwidth]{../paper/images/Stream-Batch-Distributions_op2}
+            \caption{A Sequential Processing Pipeline. Each consumer reads a batch and passes to the next consumer.}
+            \label{fig:Sequential-batch-distributions}
+        \end{center}
+    \end{figure}
+
+
+\end{frame}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Parallel Processing with an Event Data Dispatcher  }
+
+    \begin{figure}
+        \begin{center}
+            \includegraphics[width=0.7\textwidth]{../paper/images/Stream-Batch-Distributions}
+            \caption{An Event Data Dispatcher}
+            \label{fig:batch-distributions}
+        \end{center}
+    \end{figure}
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Implementation}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Two Implementations in Python and Java }
+
+    \url{https://github.com/kiat/debs2022/}
+
+    \begin{itemize}
+        \item Our first implementation was a multi-threaded Python 
+        % to make sure we can process the queries in the correct form.
+        \item We have done a subsequent implementation in Java.  
+    \end{itemize}
+
+    % Our first rapid alpha implementation of the system was a multi-threaded Python implementation to make sure that we understood the challenge tasks and are able to process the queries in the correct form.
+    % Later, we implemented the whole system again in Java. Both of these implementations are open sourced on Github\footnote{\url{https://github.com/kiat/debs2022} , last update June, 2022}.
+    
+    % Our Java implementation includes two simple threads, one is the event producer (or event batch Reader Thread that communicates over the DEBS Challenge API). 
+    % The Reader reads the stream of event batches, creates and adds event batch windows (5 min. windows) to an intermediate cache. In parallel, another consumer thread processes the cached event windows data 
+    % for the results of query 1 and query 2. We have integrated processing the query 2 with the Query 1 task within the consumer thread. 
+    % The caches are java lists of batches and a java HashMap that caches event windows for each stock symbols. 
+    % To achieve better performance we pre-allocate both of these caches Java ArrayList and HashMap with a specific size. 
+    % The two threads are synchronized over a simple lock mechanism and thread notification. The results of both queries are submitted by the consumer thread to the DEBS Challenge API.
+    
+    
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Our Java implementation }
+    
+    Our Java implementation includes two simple threads, one is the event producer (or event batch Reader Thread that communicates over the DEBS Challenge API). 
+    \begin{itemize}
+        \item Two simple threads, one is the event producer and one is the main query processor,  and result submitter. 
+        \item We use a Java lists of batches, and a java HashMap to caches event windows for each stock symbols. 
+        \item Pre-allocate both of these caches Java ArrayList and HashMap with a specific size.
+        \item Threads are synchronized over a lock mechanism and thread notification.
+        \item The results of both queries are submitted by the consumer thread to the DEBS Challenge API.
+        \item With Batch Size 10k, two Threads was enough. 
+    \end{itemize}
 
 
     
 \end{frame}
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Experiments}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Python with Batch Size 1K  }
+    
+    \begin{figure}
+        \begin{center}
+            \includegraphics[width=0.5\textwidth]{./images/throughput.png}
+            \caption{Query 2 throughput for different number of Producers. (Batch Size 1k - Multi-threaded Python implementation) }
+            \label{fig:evaluation}
+        \end{center}
+    \end{figure}
+\end{frame}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Java with Batch Size 10K  }
+    \begin{itemize}
+        \item Our Java implementation has higher performance because of some language features (Like static variable types and improved iterations over event batches).
+        \item  a latency of 19.99 seconds and a 88.21 batch per seconds
+    \end{itemize}
+
+    
+    % According to the DEBS 2022 evaluation \cite{debs2022challenge} server, our Java implementation can achieve a latency of 19.99 seconds and a 88.21 batch per 
+    % seconds with an event batch size of 10k (events arriving in batches of 10k).
+
+    
+    \begin{figure}[]
+        \begin{center}
+            \includegraphics[width=0.5\textwidth]{../DEBS2022-2022-05-28-Throuput.png}
+            \caption{Group 17 Results }
+            \label{fig:evaluation}
+        \end{center}
+    \end{figure}
+    
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{Conclusion and Extensions}
+    \begin{itemize}
+        \item Our implementation and evaluation are limited due to the time constraints we had for this work.
+        
+        \item We observed how our from-scratch-implemented system performed compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink (implemented by other groups).
+        
+        \item One potential improvement would be to implement it using a system programming language like C++ or Rust.
+        
+    \end{itemize}
+
+    
+    
+
+\end{frame}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]{  }
+    
+
+\end{frame}
 
 \end{document}
