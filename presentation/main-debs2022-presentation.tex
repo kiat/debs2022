@@ -42,12 +42,12 @@
 
 \section{Introduction}
 
-\begin{frame}[fragile]{DEBS 2022 - Grand Challenge }
+\begin{frame}[fragile]{DEBS 2022 - Grand Challenge Overview}
 
 \begin{itemize}
     \item Two queries on Stock Market Stream Data
     \item The first query is defined to compute the Exponential Moving Average (EMA) with two different smoothing factors of 38 and 100.
-    \item The sequent query is a breakout pattern based on the first query. 
+    \item The sequent query is to identify breakout pattern based on the first query. 
 \end{itemize}
     
 \end{frame}
@@ -98,7 +98,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{Buy and Sell advice based on Breakout Patterns of EMA 38 and 100  }
+\begin{frame}[fragile]{Buy and Sell Advice Based on Breakout Patterns of EMA 38 and 100  }
 
 
     \begin{figure}
@@ -143,16 +143,16 @@
 
     \begin{itemize}
             
-        \item The Challenge queries are simple and we can optimize the processing in our implementation much better. 
-        \item Our stream throughput is not very high. Maximum a Batch of 10k events. 
+        \item The Challenge queries are simple, therefore we can optimize the processing in our implementation much better. 
+        \item Our stream throughput is not very high. Maximum a Batch of 10k events, as defined by the Challenge. 
         
 
-        \item Systems like Spark or Flink include internal data processes to name a few: 
+        \item Systems like Spark or Flink include internal data processes; to name a few: 
         
         \begin{itemize}
-            \item Communications between the master and worker processes,
-            \item Internal caching and pipeline generations including batch processing, blocking data exchanges, 
-            \item checkpoint barriers, watermarks signaling or iteration barriers to provide guarantee of a FIFO order of and 
+            \item Communications between the master and worker processes
+            \item Internal caching and pipeline generations including batch processing, blocking data exchanges,
+            \item Checkpoint barriers, watermarks signaling or iteration barriers to provide guarantee of a FIFO order of and 
             snapshots of the data stream
    
         \end{itemize}
@@ -165,7 +165,7 @@
         %  But our main system design goal is to achieve high throughput and low-latency. 
         %  Systems like Spark or Flink include internal data processing pipelines including batch processing and blocking data exchanges. 
     
-        \item Lots of configuration parameters which modifies the performance/latency. 
+        \item Lots of configuration parameters which modify the performance/latency. 
         
         % These systems are designed to optimize the trade-off between higher scalability and higher stream throughput/latency performance. 
         % The described DEBS 2022 challenge does not include a very large data stream that we would need to design a high-scalable data stream processing system. 
@@ -188,7 +188,7 @@
     
     \end{itemize}
 
-    \redb{Our goal was correctnes and highest possible throughput and low latency.} 
+    \redb{Our goal was correctnes with highest possible throughput and low latency.} 
 
     
 \end{frame}
@@ -362,16 +362,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[fragile]{Java Python implementation }
+\begin{frame}[fragile]{ Python Implementation }
 
     % ADD YOUR IDEAS HERE
+
+    Summary of the Python implementation:
     
     \begin{itemize}
-        \item ADD Your Points
-        \item Our first alpha prototype 
-        \item Correctness of Query Processing 
-        \item 
-        \item 
+        \item Our first, alpha prototype
+        \item Assured correcness of Query Processing 
+        \item Allowed for a implementation that could quickly be built
+        \item Included multithreading, giving a baseline for experiments
+        \item Provided context for further improvements, i.e. a Java implementation
 
     \end{itemize}
 
@@ -384,11 +386,16 @@
 
 \begin{frame}[fragile]{Our Java implementation }
     
-    Our Java implementation includes two simple threads, one is the event producer (or event batch Reader Thread that communicates over the DEBS Challenge API). 
+    Our Java implementation includes two simple threads, one is the event producer (or event batch Reader Thread that communicates over the DEBS Challenge API), and the other is a submitter, that processes cached event windows data for queries 1 and 2. 
     \begin{itemize}
-        \item Two simple threads, one is the event producer and one is the main query processor,  and result submitter. 
-        \item We use a Java lists of batches, and a java HashMap to caches event windows for each stock symbols. 
-        \item Pre-allocate both of these caches Java ArrayList and HashMap with a specific size.
+        \item Two simple threads:
+        \begin{itemize}
+            \item Event producer for main query computations
+            \item Result submitter
+        \end{itemize}
+        % one is the event producer and one is the main query processor,  and result submitter. 
+        \item We use a Java lists of batches, and a Java HashMap to cache event windows for each stock symbols. 
+        \item Pre-allocate both of these caches in Java ArrayList and HashMap with a specific size.
         \item Threads are synchronized over a lock mechanism and thread notification.
         \item The results of both queries are submitted by the consumer thread to the DEBS Challenge API.
         \item With Batch Size 10k, two Threads was enough. 
@@ -477,6 +484,7 @@
         
         \item One potential improvement would be to implement it using a system programming language like C++ or Rust.
         
+        \item This solution has scalability potential, from larger batch sizes, to more threads, to parallel computing. 
     \end{itemize}
 
     
