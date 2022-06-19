@@ -56,6 +56,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[fragile]{Exponential Moving Average }
     
+    Exponential Moving Average equation:
+
     \begin{align*}
         EMA_t = \begin{cases}
             Y_0 &  t = 0 \\
@@ -84,7 +86,7 @@
     \begin{figure}
         \begin{center}
             \includegraphics[width=1\textwidth]{../paper/images/stock_example.png}
-            \caption{An Example of Stock Price Fluctuations Over Time}
+            \caption{An Example of Stock Price Fluctuations Over Time (Time (s) vs Price)}
             \label{fig:stock}
         \end{center}
     \end{figure}
@@ -104,7 +106,7 @@
     \begin{figure}
         \begin{center}
             \includegraphics[width=1\textwidth]{../paper/images/query2_example.png}
-            \caption{Example of Query 2 - Buy and Sell advice based on Breakout Patterns of EMA 38 and 100}
+            \caption{Example of Query 2 (Time (s) vs Price) - Buy and Sell advice based on Breakout Patterns of EMA 38 (orange) and 100 (blue)}
             \label{fig:EMAs}
          \end{center}
     \end{figure}
@@ -188,7 +190,7 @@
     
     \end{itemize}
 
-    \redb{Our goal was correctnes with highest possible throughput and low latency.} 
+    \redb{Our goal was correctness with highest possible throughput and low latency.} 
 
     
 \end{frame}
@@ -371,7 +373,7 @@
     \begin{itemize}
         \item Our first, alpha prototype
         \item Assured correcness of Query Processing 
-        \item Allowed for a implementation that could quickly be built
+        \item Allowed for an implementation that could quickly be built
         \item Included multithreading, giving a baseline for experiments
         \item Provided context for further improvements, i.e. a Java implementation
 
@@ -453,7 +455,7 @@
     \begin{figure}[]
         \begin{center}
             \includegraphics[width=0.8\textwidth]{../DEBS2022-2022-05-28-Throuput.png}
-            \caption{Group 17 Results }
+            \caption{Our group, Group 17, Results }
             \label{fig:evaluation}
         \end{center}
     \end{figure}
