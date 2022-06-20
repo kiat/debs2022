@@ -373,7 +373,13 @@
     \begin{itemize}
         \item Our first, alpha prototype
         \item Assured correctness of Query Processing 
-        \item Allowed for an implementation that could quickly be built
+        \item Allowed for us to test different ideas for processing and submitting batches
+            \begin{itemize}
+                \item Multiple producer batch processing
+                \item Stock market symbol specific Consumers
+                \item Window pricing based off last recieved event
+                \item Only previous window values kept, allowing space efficiency 
+            \end{itemize}
         \item Included multithreading, giving a baseline for experiments
         \item Provided context for further improvements, i.e. a Java implementation
 
@@ -396,7 +402,7 @@
             \item Result submitter
         \end{itemize}
         % one is the event producer and one is the main query processor,  and result submitter. 
-        \item We use a Java lists of batches, and a Java HashMap to cache event windows for each stock symbols. 
+        \item We use Java lists of batches, and a Java HashMap to cache event windows for each stock symbols. 
         \item Pre-allocate both of these caches in Java ArrayList and HashMap with a specific size.
         \item Threads are synchronized over a lock mechanism and thread notification.
         \item The results of both queries are submitted by the consumer thread to the DEBS Challenge API.
@@ -494,7 +500,37 @@
 
 \end{frame}
 
+\begin{frame}[fragile]{ Acknowledgements }
 
+    % ADD YOUR IDEAS HERE
+
+    We would like to thank the Association for Computing Machienary for hosting this conference and challenge.
+    
+    We would also like to acknowledge our other group members: 
+    \begin{itemize}
+        \item Kevin Li
+        \item David Klingler
+        \item Yuhan Gao
+        \item Dr. Kia Teymourian
+    \end{itemize}
+    % \begin{itemize}
+    %     \item Our first, alpha prototype
+    %     \item Assured correctness of Query Processing 
+    %     \item Allowed for us to test different ideas for processing and submitting batches
+    %         \begin{itemize}
+    %             \item Multiple producer batch processing
+    %             \item Stock market symbol specific Consumers
+    %             \item Window pricing based off last recieved event
+    %             \item Only previous window values kept, allowing space efficiency 
+    %         \end{itemize}
+    %     \item Included multithreading, giving a baseline for experiments
+    %     \item Provided context for further improvements, i.e. a Java implementation
+
+    % \end{itemize}
+
+
+    
+\end{frame}
 
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
