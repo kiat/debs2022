@@ -2024,6 +2024,11 @@ INPUT ./main-debs2022-presentation.vrb
 INPUT main-debs2022-presentation.vrb
 INPUT ./main-debs2022-presentation.vrb
 INPUT main-debs2022-presentation.vrb
+OUTPUT main-debs2022-presentation.vrb
+INPUT ./main-debs2022-presentation.vrb
+INPUT main-debs2022-presentation.vrb
+INPUT ./main-debs2022-presentation.vrb
+INPUT main-debs2022-presentation.vrb
 OUTPUT main-debs2022-presentation.nav
 OUTPUT main-debs2022-presentation.toc
 OUTPUT main-debs2022-presentation.snm
