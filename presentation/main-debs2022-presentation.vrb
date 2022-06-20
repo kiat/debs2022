@@ -1,0 +1,14 @@
+\frametitle{Conclusion and Future Work}
+\begin{itemize}
+        \item Our implementation and evaluation are limited due to the time constraints we had for this work.
+
+        \item We observed how our from-scratch-implemented system performed compared to some large-scale cluster-based stream processing systems like Apache Storm or Flink (implemented by other groups).
+
+        \item One potential improvement would be to implement it using a system programming language like C++ or Rust.
+
+        \item This solution has scalability potential, from larger batch sizes, to more threads, to parallel computing.
+    \end{itemize}
+
+
+
+
