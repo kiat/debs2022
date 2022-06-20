@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1655758975 "/Users/dfernandezdebedia/development/debs/debs2022/presentation/main-debs2022-presentation.tex" "main-debs2022-presentation.pdf" "main-debs2022-presentation" 1655758981
+["pdflatex"] 1655759228 "/Users/dfernandezdebedia/development/debs/debs2022/presentation/main-debs2022-presentation.tex" "main-debs2022-presentation.pdf" "main-debs2022-presentation" 1655759233
   "../DEBS2022-2022-05-28-Throuput.png" 1655672898 89044 3124a3a29b28b2f09e4d2b5aa5970003 ""
   "../paper/images/Parallel-Stream-Processing-System.pdf" 1652929653 13070 d32522124bcba943edefe21dcef15ed5 ""
   "../paper/images/Parallel-Stream-Processing-System_v2.pdf" 1652929653 14547 43039e9d2da1e3bcb979c46c98e04551 ""
@@ -8,7 +8,7 @@
   "../paper/images/query2_example.png" 1652929653 148127 c76b080c1c2ae0742bfbaa0d4d18b649 ""
   "../paper/images/stock_example.png" 1652929653 158898 8edb7ca5a42fe590518f00443a925998 ""
   "../paper/images/throughput.png" 1652929653 24833 f0c90a86a6f675db144891d82df3c74f ""
-  "/Users/dfernandezdebedia/development/debs/debs2022/presentation/main-debs2022-presentation.tex" 1655758968 19700 22b96264e87ef8bfe90350c2c657cd9e ""
+  "/Users/dfernandezdebedia/development/debs/debs2022/presentation/main-debs2022-presentation.tex" 1655759226 19698 bb74819966b4bde10741536e29d310a5 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/mnsymbol/MnSymbolC.enc" 1177804218 3275 8d7166dfdbc31ffdc8aba0c31b3bd5c8 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/mnsymbol/MnSymbolD.enc" 1177804218 3375 808c88761dbdc66fc653d18f42765b64 ""
   "/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/mnsymbol/MnSymbolE.enc" 1177804218 3433 7734f79d46d219d7347f02050533a56b ""
@@ -364,12 +364,12 @@
   "MainTop.tex" 1655672898 3467 ea9204096edf19b08c99ddee026faa9c ""
   "debs_java_v2.png" 1655758886 24154 e23dde2056d94d6f79faceb1d8483a1c ""
   "debs_python_v2.png" 1655758734 38384 e53a63de8b9f985f38ba76173416857a ""
-  "main-debs2022-presentation.aux" 1655758980 7210 b5a9fe0c600b668634ba9c2568645414 "pdflatex"
-  "main-debs2022-presentation.nav" 1655758980 3300 1775bffdb107ed084d26543020c0ccf4 "pdflatex"
-  "main-debs2022-presentation.out" 1655758980 553 e346a9ef6a39cf9b293c5c76ef27e995 "pdflatex"
-  "main-debs2022-presentation.tex" 1655758968 19700 22b96264e87ef8bfe90350c2c657cd9e ""
-  "main-debs2022-presentation.toc" 1655758980 251 5b3e62dfe5e2e989ba5c527796ffe5b5 "pdflatex"
-  "main-debs2022-presentation.vrb" 1655758980 1114 d742a6447ea20f1929a1e5d3dd160269 "pdflatex"
+  "main-debs2022-presentation.aux" 1655759232 7210 b5a9fe0c600b668634ba9c2568645414 "pdflatex"
+  "main-debs2022-presentation.nav" 1655759232 3300 1775bffdb107ed084d26543020c0ccf4 "pdflatex"
+  "main-debs2022-presentation.out" 1655759232 553 e346a9ef6a39cf9b293c5c76ef27e995 "pdflatex"
+  "main-debs2022-presentation.tex" 1655759226 19698 bb74819966b4bde10741536e29d310a5 ""
+  "main-debs2022-presentation.toc" 1655759232 251 5b3e62dfe5e2e989ba5c527796ffe5b5 "pdflatex"
+  "main-debs2022-presentation.vrb" 1655759232 1114 d742a6447ea20f1929a1e5d3dd160269 "pdflatex"
   (generated)
   "main-debs2022-presentation.aux"
   "main-debs2022-presentation.log"
